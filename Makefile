@@ -10,7 +10,7 @@ LIBS = -L/usr/lib -lc -lm
 
 # flags
 CFLAGS = -DVERSION=\"${VERSION}\" -std=c89 -pedantic -Wall -Os ${INCS}
-LDFLAGS = -s ${LIBS}
+LDFLAGS = ${LIBS}
 
 # compiler and linker
 CC = cc
