@@ -31,10 +31,15 @@ void bzzd_flush_marks(struct bzzd_park *park);
 void bzzd_set_fence_size(struct bzzd_park *park, int size);
 int bzzd_count_opened(struct bzzd_park *park);
 double bzzd_percent_park_opened(struct bzzd_park *park);
-void bzzd_find_random_spot(struct bzzd_park *park, unsigned *x, unsigned *y);
+void bzzd_find_random_spot(struct bzzd_park *park, int *x, int *y);
 
 struct bzzd_guy *bzzd_start(struct bzzd_park *park);
 void bzzd_stop(struct bzzd_guy *guy);
+void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y);
+void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y);
+void bzzd_set_coords(struct bzzd_guy *guy, int x, int y);
+void bzzd_set_target(struct bzzd_guy *guy, int x, int y);
+
 
 #ifdef __cplusplus
 }

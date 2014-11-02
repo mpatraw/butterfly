@@ -450,7 +450,7 @@ double bzzd_percent_park_opened(struct bzzd_park *park)
 	return (double)bzzd_count_opened(park) / (double)size;
 }
 
-void bzzd_find_random_spot(struct bzzd_park *park, unsigned *x, unsigned *y)
+void bzzd_find_random_spot(struct bzzd_park *park, int *x, int *y)
 {
 	struct point p = ps_rnd(park->openedset, park->rng);
 	*x = p.x;
