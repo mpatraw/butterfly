@@ -3,21 +3,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FLAG(n)	(1 >> (n))
+#define FLAG(n)	(1 << (n))
 
 enum {
-	BZZD_CONNECT_FROM_LEFT =	FLAG(1),
-	BZZD_CONNECT_FROM_RIGHT =	FLAG(2),
-	BZZD_CONNECT_FROM_TOP =		FLAG(3),
-	BZZD_CONNECT_FROM_BOTTOM =	FLAG(4),
-	BZZD_CONNECT_ON_DIAGONALS =	FLAG(5),
-	BZZD_CONNECT_ON_SIDES =		FLAG(6),
-	BZZD_CONNECT_ON_BACK =		FLAG(7),
-	BZZD_CONENCT_ONLY_OUTERS =	FLAG(8),
-	BZZD_FLIPS_VERTICALLY =		FLAG(9),
-	BZZD_FLIPS_HORIZONTALLY =	FLAG(10),
-	BZZD_ROTATES_RIGHT =		FLAG(11),
-	BZZD_ROTATES_LEFT =		FLAG(12),
+	BZZD_CONNECT_FROM_LEFT =	FLAG(0),
+	BZZD_CONNECT_FROM_RIGHT =	FLAG(1),
+	BZZD_CONNECT_FROM_TOP =		FLAG(2),
+	BZZD_CONNECT_FROM_BOTTOM =	FLAG(3),
+	BZZD_CONNECT_ON_DIAGONALS =	FLAG(4),
+	BZZD_CONNECT_ON_SIDES =		FLAG(5),
+	BZZD_CONNECT_ON_BACK =		FLAG(6),
+	BZZD_CONENCT_ONLY_OUTERS =	FLAG(7),
+	BZZD_FLIPS_VERTICALLY =		FLAG(8),
+	BZZD_FLIPS_HORIZONTALLY =	FLAG(9),
+	BZZD_ROTATES_RIGHT =		FLAG(10),
+	BZZD_ROTATES_LEFT =		FLAG(11),
 
 	BZZD_CONNECT_FROM_ALL_SIDES =
 		BZZD_CONNECT_FROM_LEFT | BZZD_CONNECT_FROM_RIGHT |
@@ -32,14 +32,14 @@ enum {
 };
 
 enum {
-	LEFT_CONN =		FLAG(1),
-	RIGHT_CONN =		FLAG(2),
-	TOP_CONN =		FLAG(3),
-	BOTTOM_CONN =		FLAG(4),
-	TOP_LEFT_CONN =		FLAG(5),
-	TOP_RIGHT_CONN =	FLAG(6),
-	BOTTOM_LEFT_CONN =	FLAG(7),
-	BOTTOM_RIGHT_CONN =	FLAG(8)
+	LEFT_CONN =		FLAG(0),
+	RIGHT_CONN =		FLAG(1),
+	TOP_CONN =		FLAG(2),
+	BOTTOM_CONN =		FLAG(3),
+	TOP_LEFT_CONN =		FLAG(4),
+	TOP_RIGHT_CONN =	FLAG(5),
+	BOTTOM_LEFT_CONN =	FLAG(6),
+	BOTTOM_RIGHT_CONN =	FLAG(7)
 };
 
 struct bzzd_pattern {
@@ -73,6 +73,9 @@ static void add_conns(struct bzzd_pattern *patt)
 	if (do_left) {
 
 	}
+
+	patt->conns[0 * patt->width + 1] |= LEFT_CONN;
+	printf("%d\n", patt->conns[0 * patt->width + 1]);
 }
 
 struct bzzd_pattern *bzzd_build_pattern(
@@ -144,6 +147,22 @@ void bzzd_debug_pattern(struct bzzd_pattern *patt)
 
 			if (cell) {
 				disp[1][1] = 'O';
+			}
+
+			if (conn & LEFT_CONN) {
+				disp[1][0] = '-';
+			}
+
+			if (conn & RIGHT_CONN) {
+				disp[1][2] = '-';
+			}
+
+			if (conn & TOP_CONN) {
+				disp[0][1] = '|';
+			}
+
+			if (conn & BOTTOM_CONN) {
+				disp[2][1] = '|';
 			}
 		}
 	}
