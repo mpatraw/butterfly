@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #define FLAG(n)	(1 << (n))
 
 enum {
@@ -13,11 +16,11 @@ enum {
 	BZZD_CONNECT_ON_DIAGONALS =	FLAG(4),
 	BZZD_CONNECT_ON_SIDES =		FLAG(5),
 	BZZD_CONNECT_ON_BACK =		FLAG(6),
-	BZZD_CONENCT_ONLY_OUTERS =	FLAG(7),
+	BZZD_CONNECT_ONLY_OUTERMOSTS =	FLAG(7),
 	BZZD_FLIPS_VERTICALLY =		FLAG(8),
 	BZZD_FLIPS_HORIZONTALLY =	FLAG(9),
-	BZZD_ROTATES_RIGHT =		FLAG(10),
-	BZZD_ROTATES_LEFT =		FLAG(11),
+	BZZD_ROTATES_LEFT =		FLAG(10),
+	BZZD_ROTATES_RIGHT =		FLAG(11),
 
 	BZZD_CONNECT_FROM_ALL_SIDES =
 		BZZD_CONNECT_FROM_LEFT | BZZD_CONNECT_FROM_RIGHT |
@@ -31,6 +34,9 @@ enum {
 		BZZD_ROTATES_RIGHT | BZZD_ROTATES_LEFT,
 };
 
+/* Turns a side (LEFT, RIGHT, TOP, BOTTOM) into a FROM_ flag. */
+#define CONN_FROM(side) (1 << (side))
+
 enum {
 	LEFT_CONN =		FLAG(0),
 	RIGHT_CONN =		FLAG(1),
@@ -40,6 +46,13 @@ enum {
 	TOP_RIGHT_CONN =	FLAG(5),
 	BOTTOM_LEFT_CONN =	FLAG(6),
 	BOTTOM_RIGHT_CONN =	FLAG(7)
+};
+
+#define CONN(side) (1 << (side))
+
+enum {
+	LEFT, RIGHT, TOP, BOTTOM,
+	NSIDES
 };
 
 struct bzzd_pattern {
@@ -55,27 +68,169 @@ struct bzzd_pattern {
 	int		height;
 	int		*cells;
 	unsigned char	*conns;
+	unsigned char	*outercells;
+	unsigned char	*outermosts;
 };
+
+static int starts_from_0(int side)
+{
+	return (side % 2) == 0;
+}
+
+static int opposite_side(int side)
+{
+	if (side == LEFT) { return RIGHT; }
+	if (side == RIGHT) { return LEFT; }
+	if (side == TOP) { return BOTTOM; }
+	if (side == BOTTOM) { return TOP; }
+	return side;
+}
+
+static void find_outers(struct bzzd_pattern *patt)
+{
+	unsigned char mostval[NSIDES];
+	for (int s = 0; s < NSIDES; ++s) {
+		if (starts_from_0(s)) {
+			mostval[s] = 0xff;
+		} else {
+			mostval[s] = 0x00;
+		}
+	}
+
+	unsigned char *outers[NSIDES] = {
+		&patt->outercells[0 * NSIDES],
+		&patt->outercells[1 * NSIDES],
+		&patt->outercells[2 * NSIDES],
+		&patt->outercells[3 * NSIDES]
+	};
+	unsigned char *outermost[NSIDES] = {
+		&patt->outermosts[0 * NSIDES],
+		&patt->outermosts[1 * NSIDES],
+		&patt->outermosts[2 * NSIDES],
+		&patt->outermosts[3 * NSIDES]
+	};
+
+	for (int y = 0; y < patt->height; ++y) {
+		for (int x = 0; x < patt->width; ++x) {
+			int cell = patt->cells[y * patt->width + x];
+			if (!cell) {
+				continue;
+			}
+
+			outers[LEFT][y] = MIN(outers[LEFT][y], x);
+			outers[RIGHT][y] = MAX(outers[RIGHT][y], x);
+			outers[TOP][x] = MIN(outers[TOP][x], y);
+			outers[BOTTOM][x] = MAX(outers[BOTTOM][x], y);
+
+			mostval[LEFT] = MIN(mostval[LEFT], outers[LEFT][y]);
+			mostval[RIGHT] = MAX(mostval[RIGHT], outers[RIGHT][y]);
+			mostval[TOP] = MIN(mostval[TOP], outers[TOP][x]);
+			mostval[BOTTOM] = MAX(
+				mostval[BOTTOM], outers[BOTTOM][x]);
+		}
+	}
+
+	for (int y = 0; y < patt->height; ++y) {
+		for (int x = 0; x < patt->width; ++x) {
+			outermost[LEFT][y] =
+				mostval[LEFT] == outers[LEFT][y];
+			outermost[RIGHT][y] =
+				mostval[RIGHT] == outers[RIGHT][y];
+			outermost[TOP][x] =
+				mostval[TOP] == outers[TOP][x];
+			outermost[BOTTOM][x] =
+				mostval[BOTTOM] == outers[BOTTOM][x];
+		}
+	}
+}
+
+static int should_conn(struct bzzd_pattern *patt, int side, int x, int y)
+{
+	int *idx = NULL, *val = NULL;
+	if (side == LEFT || side == RIGHT) {
+		idx = &y;
+		val = &x;
+	} else if (side == TOP || side == BOTTOM) {
+		idx = &x;
+		val = &y;
+	} else {
+		return 0;
+	}
+
+	int flag = patt->flags & CONN_FROM(side);
+	int is_outercell = patt->outercells[side * NSIDES + *idx] == *val;
+	int is_outermost = patt->outermosts[side * NSIDES + *idx];
+	int only_outermost = patt->flags & BZZD_CONNECT_ONLY_OUTERMOSTS;
+	int check = (only_outermost && is_outermost) || !only_outermost;
+
+	return flag && is_outercell && check;
+}
+
+static unsigned char sides_from(int side)
+{
+	if (side == LEFT || side == RIGHT) { return TOP_CONN | BOTTOM_CONN; }
+	if (side == TOP || side == BOTTOM) { return LEFT_CONN | RIGHT_CONN; }
+	return 0;
+}
+
+static unsigned char diagonals_from(int side)
+{
+	if (side == LEFT) { return TOP_LEFT_CONN | BOTTOM_LEFT_CONN; }
+	if (side == RIGHT) { return TOP_RIGHT_CONN | BOTTOM_RIGHT_CONN; }
+	if (side == TOP) { return TOP_RIGHT_CONN | TOP_LEFT_CONN; }
+	if (side == BOTTOM) { return BOTTOM_RIGHT_CONN | BOTTOM_LEFT_CONN; }
+	return 0;
+}
+
+static unsigned char back_from(int side)
+{
+	return CONN(opposite_side(side));
+}
+
+static unsigned char get_conns(struct bzzd_pattern *patt, int side)
+{
+	unsigned char conns = CONN(side);
+	if (patt->flags & BZZD_CONNECT_ON_SIDES) {
+		conns |= sides_from(side);
+	}
+	if (patt->flags & BZZD_CONNECT_ON_DIAGONALS) {
+		conns |= diagonals_from(side);
+	}
+	if (patt->flags & BZZD_CONNECT_ON_BACK) {
+		if (patt->flags & BZZD_CONNECT_ON_DIAGONALS) {
+			int opp = opposite_side(side);
+			conns |= diagonals_from(opp);
+		}
+		conns |= back_from(side);
+	}
+	return conns;
+}
 
 static void add_conns(struct bzzd_pattern *patt)
 {
-	char outers[patt->width > patt->height ? patt->width : patt->height];
-	memset(outers, 0, sizeof(outers) / sizeof(outers[0]));
+	find_outers(patt);
 
-	int only_outers = patt->flags & BZZD_CONENCT_ONLY_OUTERS;
-	int do_left = patt->flags & BZZD_CONNECT_FROM_LEFT;
-	int do_right = patt->flags & BZZD_CONNECT_FROM_RIGHT;
-	int do_top = patt->flags & BZZD_CONNECT_FROM_TOP;
-	int do_bottom = patt->flags & BZZD_CONNECT_FROM_BOTTOM;
-	// go down each flagged side
-	// if only_outers, scan and tag each coord that's the most outer
-	// if found > 0, add the flags to conns array based on flags
-	if (do_left) {
+	for (int y = 0; y < patt->width; ++y) {
+		for (int x = 0; x < patt->height; ++x) {
+			unsigned char *conn = &patt->conns[y * patt->width + x];
 
+			if (should_conn(patt, LEFT, x, y)) {
+				*conn |= get_conns(patt, LEFT);
+			}
+
+			if (should_conn(patt, RIGHT, x, y)) {
+				*conn |= get_conns(patt, RIGHT);
+			}
+
+			if (should_conn(patt, TOP, x, y)) {
+				*conn |= get_conns(patt, TOP);
+			}
+
+			if (should_conn(patt, BOTTOM, x, y)) {
+				*conn |= get_conns(patt, BOTTOM);
+			}
+		}
 	}
-
-	patt->conns[0 * patt->width + 1] |= LEFT_CONN;
-	printf("%d\n", patt->conns[0 * patt->width + 1]);
 }
 
 struct bzzd_pattern *bzzd_build_pattern(
@@ -98,7 +253,32 @@ struct bzzd_pattern *bzzd_build_pattern(
 		goto conns_alloc_failure;
 	}
 
+	int lside = MAX(width, height);
+
+	patt->outercells = calloc(NSIDES * lside, sizeof(*patt->outercells));
+	if (!patt->outercells) {
+		goto outercells_alloc_failure;
+	}
+
+	patt->outermosts = calloc(NSIDES * lside, sizeof(*patt->outermosts));
+	if (!patt->outermosts) {
+		goto outermosts_alloc_failure;
+	}
+
 	memcpy(patt->cells, from, width * height * sizeof(*patt->cells));
+
+	for (int s = 0; s < NSIDES; ++s) {
+		for (int xy = 0; xy < lside; ++xy) {
+			if (starts_from_0(s)) {
+				patt->outercells[s * NSIDES + xy] = 0xff;
+			} else {
+				patt->outercells[s * NSIDES + xy] = 0x00;
+			}
+		}
+	}
+
+	memset(patt->outermosts, 0, NSIDES * lside * sizeof(*patt->outermosts));
+
 	patt->width = width;
 	patt->height = height;
 	patt->flags = flags;
@@ -114,6 +294,10 @@ struct bzzd_pattern *bzzd_build_pattern(
 
 	return patt;
 
+outermosts_alloc_failure:
+	free(patt->outercells);
+outercells_alloc_failure:
+	free(patt->conns);
 conns_alloc_failure:
 	free(patt->cells);
 cells_alloc_failure:
@@ -132,17 +316,17 @@ void bzzd_demolish_pattern(struct bzzd_pattern *patt)
 
 void bzzd_debug_pattern(struct bzzd_pattern *patt)
 {
-	char display[patt->height * 3][patt->width * 3];
-	memset(display, ' ', patt->width * patt->height * 9 * sizeof(char));
+	unsigned char display[patt->height * 3][patt->width * 3];
+	memset(display, ' ', patt->width * patt->height * 9 * sizeof(unsigned char));
 
 	for (int y = patt->starty; y != patt->endy; y += patt->dy) {
 		for (int x = patt->startx; x != patt->endx; x += patt->dx) {
 			int cell = patt->cells[y * patt->width + x];
-			int conn = patt->conns[y * patt->width + x];
-			char *disp[3] = {
-				&display[y * 3][x * 3],
-				&display[y * 3 + 1][x * 3 + 1],
-				&display[y * 3 + 2][x * 3 + 2],
+			unsigned char conn = patt->conns[y * patt->width + x];
+			unsigned char *disp[3] = {
+				&display[y * 3 + 0][x * 3],
+				&display[y * 3 + 1][x * 3],
+				&display[y * 3 + 2][x * 3],
 			};
 
 			if (cell) {
@@ -164,6 +348,22 @@ void bzzd_debug_pattern(struct bzzd_pattern *patt)
 			if (conn & BOTTOM_CONN) {
 				disp[2][1] = '|';
 			}
+
+			if (conn & TOP_LEFT_CONN) {
+				disp[0][0] = '\\';
+			}
+
+			if (conn & TOP_RIGHT_CONN) {
+				disp[2][0] = '/';
+			}
+
+			if (conn & BOTTOM_LEFT_CONN) {
+				disp[0][2] = '/';
+			}
+
+			if (conn & BOTTOM_RIGHT_CONN) {
+				disp[2][2] = '\\';
+			}
 		}
 	}
 
@@ -184,7 +384,8 @@ int main(void)
 		0, 1, 0
 	};
 
-	patt = bzzd_build_pattern(blueprint, 3, 3, BZZD_CONNECT_FROM_ALL_SIDES);
+	patt = bzzd_build_pattern(blueprint, 3, 3,
+		BZZD_CONNECT_FROM_ALL_SIDES | BZZD_CONNECT_ON_DIAGONALS);
 	if (!patt) {
 		fprintf(stderr, "failed to build patter\n");
 		return -1;
