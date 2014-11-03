@@ -360,11 +360,11 @@ void bzzd_debug_pattern(struct bzzd_pattern *patt)
 			}
 
 			if (conn & TOP_RIGHT_CONN) {
-				disp[2][0] = '/';
+				disp[0][2] = '/';
 			}
 
 			if (conn & BOTTOM_LEFT_CONN) {
-				disp[0][2] = '/';
+				disp[2][0] = '/';
 			}
 
 			if (conn & BOTTOM_RIGHT_CONN) {
@@ -385,15 +385,17 @@ int main(void)
 {
 	struct bzzd_pattern *patt;
 	int blueprint[] = {
-		0, 1, 0,
-		1, 1, 1,
-		0, 1, 0
+		0, 1, 0, 1,
+		1, 1, 1, 1,
+		0, 1, 0, 1,
+		1, 1, 1, 1
 	};
 
-	patt = bzzd_build_pattern(blueprint, 3, 3,
-		BZZD_CONNECT_FROM_ALL_SIDES | BZZD_CONNECT_ON_DIAGONALS);
+	patt = bzzd_build_pattern(blueprint, 4, 4,
+		BZZD_CONNECT_FROM_ALL_SIDES | BZZD_CONNECT_ON_FRONT |
+		BZZD_CONNECT_ONLY_OUTERMOSTS);
 	if (!patt) {
-		fprintf(stderr, "failed to build patter\n");
+		fprintf(stderr, "failed to build pattern\n");
 		return -1;
 	}
 
