@@ -20,8 +20,6 @@ enum {
 	BZZD_CONNECT_ONLY_OUTERMOSTS =	FLAG(8),
 	BZZD_FLIPS_VERTICALLY =		FLAG(9),
 	BZZD_FLIPS_HORIZONTALLY =	FLAG(10),
-	BZZD_ROTATES_LEFT =		FLAG(11),
-	BZZD_ROTATES_RIGHT =		FLAG(12),
 
 	BZZD_CONNECT_FROM_ALL_SIDES =
 		BZZD_CONNECT_FROM_LEFT | BZZD_CONNECT_FROM_RIGHT |
@@ -32,9 +30,7 @@ enum {
 	BZZD_CONNECT_ON_FRONT_SIDES =
 		BZZD_CONNECT_ON_FRONT | BZZD_CONNECT_ON_SIDES,
 	BZZD_FLIPS =
-		BZZD_FLIPS_VERTICALLY | BZZD_FLIPS_HORIZONTALLY,
-	BZZD_ROTATES =
-		BZZD_ROTATES_RIGHT | BZZD_ROTATES_LEFT,
+		BZZD_FLIPS_VERTICALLY | BZZD_FLIPS_HORIZONTALLY
 };
 
 /* Turns a side (LEFT, RIGHT, TOP, BOTTOM) into a FROM_ flag. */
@@ -320,6 +316,28 @@ void bzzd_demolish_pattern(struct bzzd_pattern *patt)
 	free(patt);
 }
 
+int bzzd_get_pattern_cell(struct bzzd_pattern *patt, int x, int y)
+{
+	x = abs(patt->startx - x);
+	y = abs(patt->starty - y);
+	return patt->cells[y * patt->width + x];
+}
+
+unsigned char bzzd_get_pattern_conns(struct bzzd_pattern *patt, int x, int y)
+{
+	x = abs(patt->startx - x);
+	y = abs(patt->starty - y);
+	return patt->conns[y * patt->width + x];
+}
+
+void bzzd_flipv(struct bzzd_pattern *patt)
+{
+	int tmp = patt->endy;
+	patt->endy = patt->starty - patt->dy;
+	patt->starty = tmp - patt->dy;
+	patt->dy *= -1;
+}
+
 void bzzd_debug_pattern(struct bzzd_pattern *patt)
 {
 	unsigned char display[patt->height * 3][patt->width * 3];
@@ -327,8 +345,8 @@ void bzzd_debug_pattern(struct bzzd_pattern *patt)
 
 	for (int y = patt->starty; y != patt->endy; y += patt->dy) {
 		for (int x = patt->startx; x != patt->endx; x += patt->dx) {
-			int cell = patt->cells[y * patt->width + x];
-			unsigned char conn = patt->conns[y * patt->width + x];
+			int cell = bzzd_get_pattern_cell(patt, x, y);
+			unsigned char conn = bzzd_get_pattern_conns(patt, x, y);
 			unsigned char *disp[3] = {
 				&display[y * 3 + 0][x * 3],
 				&display[y * 3 + 1][x * 3],
@@ -399,6 +417,9 @@ int main(void)
 		return -1;
 	}
 
+	bzzd_debug_pattern(patt);
+	bzzd_flipv(patt);
+	printf("#########################\n");
 	bzzd_debug_pattern(patt);
 
 	bzzd_demolish_pattern(patt);
