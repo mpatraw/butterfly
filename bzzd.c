@@ -259,9 +259,9 @@ struct bzzd_park {
 struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 {
 	struct bzzd_park *park = malloc(sizeof(*park));
-    	if (!park) {
-        	goto alloc_failure;
-    	}
+	if (!park) {
+    	goto alloc_failure;
+	}
 	memset(park, 0, sizeof(*park));
 
 	park->markedset = malloc(sizeof(*park->markedset));
@@ -294,9 +294,9 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 	park->width = w;
 	park->height = h;
 
-    	park->fence = 0;
+	park->fence = 0;
 
-    	park->owns_spots = 0;
+	park->owns_spots = 0;
 
 	return park;
 
@@ -473,7 +473,7 @@ struct bzzd_guy {
 	int (*pathing_function) (struct bzzd_guy *);
 };
 
-struct bzzd_guy *bzzd_start(struct bzzd_park *park)
+struct bzzd_guy *bzzd_binge(struct bzzd_park *park)
 {
 	struct bzzd_guy *guy = malloc(sizeof(*guy));
 	if (!guy) {
@@ -489,7 +489,33 @@ alloc_failure:
 	return NULL;
 }
 
-void bzzd_stop(struct bzzd_guy *guy)
+void bzzd_passout(struct bzzd_guy *guy)
 {
 	free(guy);
 }
+
+void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y)
+{
+	if (x) *x = guy->x;
+	if (y) *y = guy->y;
+}
+
+void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y)
+{
+	if (x) *x = guy->target_x;
+	if (y) *y = guy->target_y;
+}
+
+void bzzd_set_coords(struct bzzd_guy *guy, int x, int y)
+{
+	guy->x = x;
+	guy->y = y;
+}
+
+void bzzd_set_target(struct bzzd_guy *guy, int x, int y)
+{
+	guy->target_x = x;
+	guy->target_y = y;
+}
+
+

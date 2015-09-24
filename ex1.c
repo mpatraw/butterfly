@@ -11,7 +11,7 @@ int main(void)
 	int y;
 
 	park = bzzd_new_park(10, 10);
-	guy = bzzd_start(park);
+	guy = bzzd_binge(park);
 
 	for (y = 0; y < bzzd_get_park_height(park); ++y) {
 		for (x = 0; x < bzzd_get_park_width(park); ++x) {
@@ -20,7 +20,7 @@ int main(void)
 		printf("\n");
 	}
 
-	bzzd_stop(guy);
+	bzzd_passout(guy);
 	bzzd_close_park(park);
 	return 0;
 }

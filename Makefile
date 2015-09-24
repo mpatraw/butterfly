@@ -9,7 +9,7 @@ INCS = -I. -I/usr/include
 LIBS = -L/usr/lib -lc -lm
 
 # flags
-CFLAGS = -DVERSION=\"${VERSION}\" -std=c89 -pedantic -Wall -Os ${INCS}
+CFLAGS = -DVERSION=\"${VERSION}\" -std=c99 -pedantic -Wall -Os ${INCS}
 LDFLAGS = ${LIBS}
 
 # compiler and linker

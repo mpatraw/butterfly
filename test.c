@@ -96,17 +96,19 @@ static void find_outers(struct bzzd_pattern *patt)
 		}
 	}
 
+	int lside = MAX(patt->width, patt->height);
+
 	unsigned char *outers[NSIDES] = {
-		&patt->outercells[0 * NSIDES],
-		&patt->outercells[1 * NSIDES],
-		&patt->outercells[2 * NSIDES],
-		&patt->outercells[3 * NSIDES]
+		&patt->outercells[0 * lside],
+		&patt->outercells[1 * lside],
+		&patt->outercells[2 * lside],
+		&patt->outercells[3 * lside]
 	};
 	unsigned char *outermost[NSIDES] = {
-		&patt->outermosts[0 * NSIDES],
-		&patt->outermosts[1 * NSIDES],
-		&patt->outermosts[2 * NSIDES],
-		&patt->outermosts[3 * NSIDES]
+		&patt->outermosts[0 * lside],
+		&patt->outermosts[1 * lside],
+		&patt->outermosts[2 * lside],
+		&patt->outermosts[3 * lside]
 	};
 
 	for (int y = 0; y < patt->height; ++y) {
@@ -156,9 +158,11 @@ static int should_conn(struct bzzd_pattern *patt, int side, int x, int y)
 		return 0;
 	}
 
+	int lside = MAX(patt->width, patt->height);
+
 	int flag = patt->flags & CONN_FROM(side);
-	int is_outercell = patt->outercells[side * NSIDES + *idx] == *val;
-	int is_outermost = patt->outermosts[side * NSIDES + *idx];
+	int is_outercell = patt->outercells[side * lside + *idx] == *val;
+	int is_outermost = patt->outermosts[side * lside + *idx];
 	int only_outermost = patt->flags & BZZD_CONNECT_ONLY_OUTERMOSTS;
 	int check = (only_outermost && is_outermost) || !only_outermost;
 
@@ -272,9 +276,9 @@ struct bzzd_pattern *bzzd_build_pattern(
 	for (int s = 0; s < NSIDES; ++s) {
 		for (int xy = 0; xy < lside; ++xy) {
 			if (starts_from_0(s)) {
-				patt->outercells[s * NSIDES + xy] = 0xff;
+				patt->outercells[s * lside + xy] = 0xff;
 			} else {
-				patt->outercells[s * NSIDES + xy] = 0x00;
+				patt->outercells[s * lside + xy] = 0x00;
 			}
 		}
 	}
@@ -336,6 +340,14 @@ void bzzd_flipv(struct bzzd_pattern *patt)
 	patt->endy = patt->starty - patt->dy;
 	patt->starty = tmp - patt->dy;
 	patt->dy *= -1;
+}
+
+void bzzd_flipx(struct bzzd_pattern *patt)
+{
+	int tmp = patt->endx;
+	patt->endx = patt->startx - patt->dx;
+	patt->startx = tmp - patt->dx;
+	patt->dx *= -1;
 }
 
 void bzzd_debug_pattern(struct bzzd_pattern *patt)
@@ -411,7 +423,7 @@ int main(void)
 
 	patt = bzzd_build_pattern(blueprint, 4, 4,
 		BZZD_CONNECT_FROM_ALL_SIDES | BZZD_CONNECT_ON_FRONT |
-		BZZD_CONNECT_ONLY_OUTERMOSTS);
+		BZZD_CONNECT_ONLY_OUTERMOSTS | BZZD_CONNECT_ON_DIAGONALS);
 	if (!patt) {
 		fprintf(stderr, "failed to build pattern\n");
 		return -1;

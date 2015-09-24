@@ -33,8 +33,8 @@ int bzzd_count_opened(struct bzzd_park *park);
 double bzzd_percent_park_opened(struct bzzd_park *park);
 void bzzd_find_random_spot(struct bzzd_park *park, int *x, int *y);
 
-struct bzzd_guy *bzzd_start(struct bzzd_park *park);
-void bzzd_stop(struct bzzd_guy *guy);
+struct bzzd_guy *bzzd_binge(struct bzzd_park *park);
+void bzzd_passout(struct bzzd_guy *guy);
 void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y);
 void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y);
 void bzzd_set_coords(struct bzzd_guy *guy, int x, int y);
