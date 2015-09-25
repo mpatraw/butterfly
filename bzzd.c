@@ -445,7 +445,7 @@ void bzzd_pee(struct bzzd_park *park, int x, int y, int pee)
 	}
 }
 
-void bzzd_flush_freshs(struct bzzd_park *park)
+void bzzd_dry_fresh(struct bzzd_park *park)
 {
 	int i;
 	struct point *pi;
