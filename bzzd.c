@@ -242,9 +242,11 @@ park functions.
 
 */
 
+#define MARKED_THRESHOLD 1
+
 struct bzzd_park {
-	struct pointset *openedset;
 	struct pointset *markedset;
+	struct pointset *markingset;
 	struct xor128_state *rng;
 	u32 seed;
 
@@ -264,13 +266,13 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 	}
 	memset(park, 0, sizeof(*park));
 
-	park->markedset = malloc(sizeof(*park->markedset));
-	if (!park->markedset) {
+	park->markingset = malloc(sizeof(*park->markingset));
+	if (!park->markingset) {
 		goto alloc_failure;
 	}
 
-	park->openedset = malloc(sizeof(*park->openedset));
-	if (!park->openedset) {
+	park->markedset = malloc(sizeof(*park->markedset));
+	if (!park->markedset) {
 		goto alloc_failure;
 	}
 
@@ -279,12 +281,12 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 		goto alloc_failure;
 	}
 
-	if (ps_init(park->markedset, w, h)) {
-		goto markedset_init_failure;
+	if (ps_init(park->markingset, w, h)) {
+		goto markingset_init_failure;
 	}
 
-	if (ps_init(park->openedset, w, h)) {
-		goto openedset_init_failure;
+	if (ps_init(park->markedset, w, h)) {
+		goto markedset_init_failure;
 	}
 
 	park->seed = time(NULL);
@@ -300,18 +302,18 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 
 	return park;
 
-openedset_init_failure:
-	ps_uninit(park->markedset);
 markedset_init_failure:
+	ps_uninit(park->markingset);
+markingset_init_failure:
 alloc_failure:
 	if (park->rng) {
 		free(park->rng);
 	}
-	if (park->openedset) {
-		free(park->openedset);
-	}
 	if (park->markedset) {
 		free(park->markedset);
+	}
+	if (park->markingset) {
+		free(park->markingset);
 	}
 	if (park) {
 		free(park);
@@ -352,11 +354,11 @@ alloc_failure:
 
 void bzzd_close_park(struct bzzd_park *park)
 {
+	ps_uninit(park->markingset);
 	ps_uninit(park->markedset);
-	ps_uninit(park->openedset);
 	free(park->rng);
-	free(park->openedset);
 	free(park->markedset);
+	free(park->markingset);
 	free(park->spots);
 	free(park);
 }
@@ -399,39 +401,39 @@ int bzzd_is_inside_park(struct bzzd_park *park, int x, int y)
 	return in_x && in_y;
 }
 
-int bzzd_is_opened_spot(struct bzzd_park *park, int x, int y)
-{
-	return ps_has(park->openedset, make_point(x, y));
-}
-
 int bzzd_is_marked_spot(struct bzzd_park *park, int x, int y)
 {
-	return ps_has(park->openedset, make_point(x, y));
+	return ps_has(park->markedset, make_point(x, y));
 }
 
-void bzzd_mark(struct bzzd_park *park, int x, int y, int with)
+int bzzd_is_marking_spot(struct bzzd_park *park, int x, int y)
+{
+	return ps_has(park->markingset, make_point(x, y));
+}
+
+void bzzd_marking(struct bzzd_park *park, int x, int y, int with)
 {
 	if (bzzd_is_inside_park(park, x, y)) {
 		if (with >= 1) {
-			ps_add(park->markedset, make_point(x, y));
+			ps_add(park->markingset, make_point(x, y));
 		} else if (with <= -1) {
+			ps_rem(park->markingset, make_point(x, y));
 			ps_rem(park->markedset, make_point(x, y));
-			ps_rem(park->openedset, make_point(x, y));
 		}
 		bzzd_set_spot(park, x, y, with);
 	}
 }
 
-void bzzd_flush_marks(struct bzzd_park *park)
+void bzzd_flush_markings(struct bzzd_park *park)
 {
 	int i;
 	struct point *pi;
 
-	PS_FOR(park->markedset, i, pi) {
-		ps_add(park->openedset, *pi);
+	PS_FOR(park->markingset, i, pi) {
+		ps_add(park->markedset, *pi);
 	}
 
-	ps_clr(park->markedset);
+	ps_clr(park->markingset);
 }
 
 void bzzd_set_fence_size(struct bzzd_park *park, int size)
@@ -439,20 +441,20 @@ void bzzd_set_fence_size(struct bzzd_park *park, int size)
 	park->fence = size;
 }
 
-int bzzd_count_opened(struct bzzd_park *park)
+int bzzd_count_marked(struct bzzd_park *park)
 {
-	return park->openedset->length;
+	return park->markedset->length;
 }
 
-double bzzd_percent_park_opened(struct bzzd_park *park)
+double bzzd_percent_park_marked(struct bzzd_park *park)
 {
 	int size = park->width * park->height;
-	return (double)bzzd_count_opened(park) / (double)size;
+	return (double)bzzd_count_marked(park) / (double)size;
 }
 
-void bzzd_find_random_spot(struct bzzd_park *park, int *x, int *y)
+void bzzd_find_random_marked_spot(struct bzzd_park *park, int *x, int *y)
 {
-	struct point p = ps_rnd(park->openedset, park->rng);
+	struct point p = ps_rnd(park->markedset, park->rng);
 	*x = p.x;
 	*y = p.y;
 }
@@ -489,7 +491,7 @@ alloc_failure:
 	return NULL;
 }
 
-void bzzd_passout(struct bzzd_guy *guy)
+void bzzd_blackout(struct bzzd_guy *guy)
 {
 	free(guy);
 }
@@ -518,4 +520,12 @@ void bzzd_set_target(struct bzzd_guy *guy, int x, int y)
 	guy->target_y = y;
 }
 
+void bzzd_wakeup_random(struct bzzd_guy *guy)
+{
+	int w = guy->park->width;
+	int h = guy->park->height;
+	int f = guy->park->fence;
+	guy->x = xor128_next_range(guy->park->rng, f, w - f - 1);
+	guy->y = xor128_next_range(guy->park->rng, f, h - f - 1);
+}
 

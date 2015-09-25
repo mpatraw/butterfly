@@ -24,21 +24,22 @@ int bzzd_get_park_height(struct bzzd_park *park);
 int bzzd_get_spot(struct bzzd_park *park, int x, int y);
 void bzzd_set_spot(struct bzzd_park *park, int x, int y, int to);
 int bzzd_is_inside_park(struct bzzd_park *park, int x, int y);
-int bzzd_is_opened_spot(struct bzzd_park *park, int x, int y);
 int bzzd_is_marked_spot(struct bzzd_park *park, int x, int y);
-void bzzd_mark(struct bzzd_park *park, int x, int y, int with);
-void bzzd_flush_marks(struct bzzd_park *park);
+int bzzd_is_marking_spot(struct bzzd_park *park, int x, int y);
+void bzzd_marking(struct bzzd_park *park, int x, int y, int with);
+void bzzd_flush_markings(struct bzzd_park *park);
 void bzzd_set_fence_size(struct bzzd_park *park, int size);
-int bzzd_count_opened(struct bzzd_park *park);
-double bzzd_percent_park_opened(struct bzzd_park *park);
-void bzzd_find_random_spot(struct bzzd_park *park, int *x, int *y);
+int bzzd_count_marked(struct bzzd_park *park);
+double bzzd_percent_park_marked(struct bzzd_park *park);
+void bzzd_find_random_marked_spot(struct bzzd_park *park, int *x, int *y);
 
 struct bzzd_guy *bzzd_binge(struct bzzd_park *park);
-void bzzd_passout(struct bzzd_guy *guy);
+void bzzd_blackout(struct bzzd_guy *guy);
 void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y);
 void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y);
 void bzzd_set_coords(struct bzzd_guy *guy, int x, int y);
 void bzzd_set_target(struct bzzd_guy *guy, int x, int y);
+void bzzd_wakeup_random(struct bzzd_guy *guy);
 
 
 #ifdef __cplusplus

@@ -20,7 +20,7 @@ int main(void)
 		printf("\n");
 	}
 
-	bzzd_passout(guy);
+	bzzd_blackout(guy);
 	bzzd_close_park(park);
 	return 0;
 }
