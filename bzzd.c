@@ -246,7 +246,7 @@ park functions.
 
 struct bzzd_park {
 	struct pointset *markedset;
-	struct pointset *markingset;
+	struct pointset *freshset;
 	struct xor128_state *rng;
 	u32 seed;
 
@@ -266,8 +266,8 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 	}
 	memset(park, 0, sizeof(*park));
 
-	park->markingset = malloc(sizeof(*park->markingset));
-	if (!park->markingset) {
+	park->freshset = malloc(sizeof(*park->freshset));
+	if (!park->freshset) {
 		goto alloc_failure;
 	}
 
@@ -281,8 +281,8 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 		goto alloc_failure;
 	}
 
-	if (ps_init(park->markingset, w, h)) {
-		goto markingset_init_failure;
+	if (ps_init(park->freshset, w, h)) {
+		goto freshset_init_failure;
 	}
 
 	if (ps_init(park->markedset, w, h)) {
@@ -303,8 +303,8 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 	return park;
 
 markedset_init_failure:
-	ps_uninit(park->markingset);
-markingset_init_failure:
+	ps_uninit(park->freshset);
+freshset_init_failure:
 alloc_failure:
 	if (park->rng) {
 		free(park->rng);
@@ -312,8 +312,8 @@ alloc_failure:
 	if (park->markedset) {
 		free(park->markedset);
 	}
-	if (park->markingset) {
-		free(park->markingset);
+	if (park->freshset) {
+		free(park->freshset);
 	}
 	if (park) {
 		free(park);
@@ -354,11 +354,11 @@ alloc_failure:
 
 void bzzd_close_park(struct bzzd_park *park)
 {
-	ps_uninit(park->markingset);
+	ps_uninit(park->freshset);
 	ps_uninit(park->markedset);
 	free(park->rng);
 	free(park->markedset);
-	free(park->markingset);
+	free(park->freshset);
 	free(park->spots);
 	free(park);
 }
@@ -373,6 +373,27 @@ void bzzd_set_seed(struct bzzd_park *park, int seed)
 	park->seed = seed;
 	xor128_seed(park->rng, park->seed);
 }
+
+int bzzd_get_park_west(struct bzzd_park *park)
+{
+	return park->fence;
+}
+
+int bzzd_get_park_north(struct bzzd_park *park)
+{
+	return park->fence;
+}
+
+int bzzd_get_park_east(struct bzzd_park *park)
+{
+	return park->width - park->fence - 1;
+}
+
+int bzzd_get_park_south(struct bzzd_park *park)
+{
+	return park->height - park->fence - 1;
+}
+
 
 int bzzd_get_park_width(struct bzzd_park *park)
 {
@@ -406,39 +427,44 @@ int bzzd_is_marked_spot(struct bzzd_park *park, int x, int y)
 	return ps_has(park->markedset, make_point(x, y));
 }
 
-int bzzd_is_marking_spot(struct bzzd_park *park, int x, int y)
+int bzzd_is_fresh_spot(struct bzzd_park *park, int x, int y)
 {
-	return ps_has(park->markingset, make_point(x, y));
+	return ps_has(park->freshset, make_point(x, y));
 }
 
-void bzzd_marking(struct bzzd_park *park, int x, int y, int with)
+void bzzd_pee(struct bzzd_park *park, int x, int y, int pee)
 {
 	if (bzzd_is_inside_park(park, x, y)) {
-		if (with >= 1) {
-			ps_add(park->markingset, make_point(x, y));
-		} else if (with <= -1) {
-			ps_rem(park->markingset, make_point(x, y));
+		if (pee >= 1) {
+			ps_add(park->freshset, make_point(x, y));
+		} else if (pee <= -1) {
+			ps_rem(park->freshset, make_point(x, y));
 			ps_rem(park->markedset, make_point(x, y));
 		}
-		bzzd_set_spot(park, x, y, with);
+		bzzd_set_spot(park, x, y, pee);
 	}
 }
 
-void bzzd_flush_markings(struct bzzd_park *park)
+void bzzd_flush_freshs(struct bzzd_park *park)
 {
 	int i;
 	struct point *pi;
 
-	PS_FOR(park->markingset, i, pi) {
+	PS_FOR(park->freshset, i, pi) {
 		ps_add(park->markedset, *pi);
 	}
 
-	ps_clr(park->markingset);
+	ps_clr(park->freshset);
 }
 
 void bzzd_set_fence_size(struct bzzd_park *park, int size)
 {
 	park->fence = size;
+}
+
+int bzzd_get_fence_size(struct bzzd_park *park)
+{
+	return park->fence;
 }
 
 int bzzd_count_marked(struct bzzd_park *park)
@@ -520,12 +546,212 @@ void bzzd_set_target(struct bzzd_guy *guy, int x, int y)
 	guy->target_y = y;
 }
 
-void bzzd_wakeup_random(struct bzzd_guy *guy)
+/*
+wakup functions.
+*/
+
+void bzzd_wakeup_fixed(struct bzzd_guy *guy, int x, int y)
 {
-	int w = guy->park->width;
-	int h = guy->park->height;
-	int f = guy->park->fence;
-	guy->x = xor128_next_range(guy->park->rng, f, w - f - 1);
-	guy->y = xor128_next_range(guy->park->rng, f, h - f - 1);
+	guy->x = x;
+	guy->y = y;
 }
 
+void bzzd_wakeup_random(struct bzzd_guy *guy)
+{
+	int w, n, e, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, e);
+	guy->y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_wakeup_random_west(struct bzzd_guy *guy)
+{
+	int w, n, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, guy->park->width / 2);
+	guy->y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_wakeup_random_east(struct bzzd_guy *guy)
+{
+	int n, e, s;
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, guy->park->width / 2, e);
+	guy->y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_wakeup_random_north(struct bzzd_guy *guy)
+{
+	int w, n, e;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, e);
+	guy->y = xor128_next_range(guy->park->rng, n, guy->park->height / 2);
+}
+
+void bzzd_wakeup_random_south(struct bzzd_guy *guy)
+{
+	int w, e, s;
+	w = bzzd_get_park_west(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, e);
+	guy->y = xor128_next_range(guy->park->rng, guy->park->height / 2, s);
+}
+
+void bzzd_wakeup_random_west_edge(struct bzzd_guy *guy)
+{
+	int w, n, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = w;
+	guy->y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_wakeup_random_east_edge(struct bzzd_guy *guy)
+{
+	int n, e, s;
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = e;
+	guy->y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_wakeup_random_north_edge(struct bzzd_guy *guy)
+{
+	int w, n, e;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, e);
+	guy->y = n;
+}
+
+void bzzd_wakeup_random_south_edge(struct bzzd_guy *guy)
+{
+	int w, e, s;
+	w = bzzd_get_park_west(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->x = xor128_next_range(guy->park->rng, w, e);
+	guy->y = s;
+}
+
+void bzzd_wakeup_random_westeast_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_wakeup_random_west_edge(guy);
+	} else {
+		bzzd_wakeup_random_east_edge(guy);
+	}
+}
+
+void bzzd_wakeup_random_northsouth_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_wakeup_random_north_edge(guy);
+	} else {
+		bzzd_wakeup_random_south_edge(guy);
+	}
+}
+
+void bzzd_wakeup_random_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_wakeup_random_westeast_edge(guy);
+	} else {
+		bzzd_wakeup_random_northsouth_edge(guy);
+	}
+}
+
+void bzzd_wakeup_random_marked(struct bzzd_guy *guy)
+{
+	struct point p = ps_rnd(guy->park->markedset, guy->park->rng);
+	guy->x = p.x;
+	guy->y = p.y;
+}
+
+void bzzd_wakeup_random_fresh(struct bzzd_guy *guy)
+{
+	struct point p = ps_rnd(guy->park->freshset, guy->park->rng);
+	guy->x = p.x;
+	guy->y = p.y;
+}
+
+/*
+peeing functions.
+*/
+
+void bzzd_pee_everywhere(struct bzzd_guy *guy, int pee)
+{
+	int x, y;
+	int w, n, e, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	for (y = n; y <= s; ++y) {
+		for (x = w; x <= e; ++x) {
+			bzzd_pee(guy->park, x, y, pee);
+		}
+	}
+}
+
+void bzzd_pee_1(struct bzzd_guy *guy, int pee)
+{
+	bzzd_pee(guy->park, guy->x, guy->y, pee);
+}
+
+void bzzd_pee_plus(struct bzzd_guy *guy, int pee)
+{
+    bzzd_pee(guy->park, guy->x, guy->y, pee);
+    bzzd_pee(guy->park, guy->x - 1, guy->y, pee);
+    bzzd_pee(guy->park, guy->x, guy->y - 1, pee);
+    bzzd_pee(guy->park, guy->x, guy->y + 1, pee);
+    bzzd_pee(guy->park, guy->x + 1, guy->y, pee);
+}
+
+void bzzd_pee_x(struct bzzd_guy *guy, int pee)
+{
+    bzzd_pee(guy->park, guy->x, guy->y, pee);
+    bzzd_pee(guy->park, guy->x - 1, guy->y - 1, pee);
+    bzzd_pee(guy->park, guy->x - 1, guy->y + 1, pee);
+    bzzd_pee(guy->park, guy->x + 1, guy->y - 1, pee);
+    bzzd_pee(guy->park, guy->x + 1, guy->y + 1, pee);
+}
+
+void bzzd_pee_rect(struct bzzd_guy *guy, int hw, int hh, int pee)
+{
+    int x, y;
+    for (x = ceil(guy->x - hw); x <= floor(guy->x + hw); ++x) {
+        for (y = ceil(guy->y - hh); y <= floor(guy->y + hh); ++y) {
+            bzzd_pee(guy->park, x, y, pee);
+        }
+    }
+}
+
+void bzzd_pee_circle(struct bzzd_guy *guy, int r, int pee)
+{
+    int dx, dy, h, x, y;
+
+    for (dx = -r; dx <= r; ++dx)
+    {
+        h = floor(sqrt(r * r - dx * dx));
+        for (dy = -h; dy <= h; ++dy)
+        {
+            x = guy->x + dx;
+            y = guy->y + dy;
+            bzzd_pee(guy->park, x, y, pee);
+        }
+    }
+}
