@@ -61,12 +61,42 @@ void bzzd_wakeup_random_edge(struct bzzd_guy *guy);
 void bzzd_wakeup_random_marked(struct bzzd_guy *guy);
 void bzzd_wakeup_random_fresh(struct bzzd_guy *guy);
 
+void bzzd_target_fixed(struct bzzd_guy *guy, int x, int y);
+void bzzd_target_random(struct bzzd_guy *guy);
+void bzzd_target_random_west(struct bzzd_guy *guy);
+void bzzd_target_random_east(struct bzzd_guy *guy);
+void bzzd_target_random_north(struct bzzd_guy *guy);
+void bzzd_target_random_south(struct bzzd_guy *guy);
+void bzzd_target_random_west_edge(struct bzzd_guy *guy);
+void bzzd_target_random_east_edge(struct bzzd_guy *guy);
+void bzzd_target_random_north_edge(struct bzzd_guy *guy);
+void bzzd_target_random_south_edge(struct bzzd_guy *guy);
+void bzzd_target_random_westeast_edge(struct bzzd_guy *guy);
+void bzzd_target_random_northsouth_edge(struct bzzd_guy *guy);
+void bzzd_target_random_edge(struct bzzd_guy *guy);
+void bzzd_target_random_marked(struct bzzd_guy *guy);
+void bzzd_target_random_fresh(struct bzzd_guy *guy);
+
 void bzzd_pee_everywhere(struct bzzd_guy *guy, int pee);
 void bzzd_pee_1(struct bzzd_guy *guy, int pee);
 void bzzd_pee_plus(struct bzzd_guy *guy, int pee);
 void bzzd_pee_x(struct bzzd_guy *guy, int pee);
 void bzzd_pee_rect(struct bzzd_guy *guy, int hw, int hh, int pee);
 void bzzd_pee_circle(struct bzzd_guy *guy, int r, int pee);
+
+void bzzd_stagger_by(struct bzzd_guy *guy, int dx, int dy);
+void bzzd_stagger_to_target(struct bzzd_guy *guy, double weight);
+void bzzd_line_path_to_target(struct bzzd_guy *guy);
+void bzzd_tunnel_path_to_target(struct bzzd_guy *guy);
+int bzzd_walk_path(struct bzzd_guy *guy);
+void bzzd_cancel_path(struct bzzd_guy *guy);
+
+int bzzd_is_on_marked(struct bzzd_guy *guy);
+int bzzd_is_on_fresh(struct bzzd_guy *guy);
+int bzzd_is_on_target(struct bzzd_guy *guy);
+int bzzd_is_on_fixed(struct bzzd_guy *guy, int x, int y);
+int bzzd_is_on_fixed_x(struct bzzd_guy *guy, int x);
+int bzzd_is_on_fixed_y(struct bzzd_guy *guy, int y);
 
 #ifdef __cplusplus
 }

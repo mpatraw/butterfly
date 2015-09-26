@@ -262,7 +262,7 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 {
 	struct bzzd_park *park = malloc(sizeof(*park));
 	if (!park) {
-    	goto alloc_failure;
+		goto alloc_failure;
 	}
 	memset(park, 0, sizeof(*park));
 
@@ -547,7 +547,7 @@ void bzzd_set_target(struct bzzd_guy *guy, int x, int y)
 }
 
 /*
-wakup functions.
+wakeup functions.
 */
 
 void bzzd_wakeup_fixed(struct bzzd_guy *guy, int x, int y)
@@ -689,6 +689,148 @@ void bzzd_wakeup_random_fresh(struct bzzd_guy *guy)
 }
 
 /*
+target functions.
+*/
+
+void bzzd_target_fixed(struct bzzd_guy *guy, int x, int y)
+{
+	guy->target_x = x;
+	guy->target_y = y;
+}
+
+void bzzd_target_random(struct bzzd_guy *guy)
+{
+	int w, n, e, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, e);
+	guy->target_y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_target_random_west(struct bzzd_guy *guy)
+{
+	int w, n, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, guy->park->width / 2);
+	guy->target_y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_target_random_east(struct bzzd_guy *guy)
+{
+	int n, e, s;
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, guy->park->width / 2, e);
+	guy->target_y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_target_random_north(struct bzzd_guy *guy)
+{
+	int w, n, e;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, e);
+	guy->target_y = xor128_next_range(guy->park->rng, n, guy->park->height / 2);
+}
+
+void bzzd_target_random_south(struct bzzd_guy *guy)
+{
+	int w, e, s;
+	w = bzzd_get_park_west(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, e);
+	guy->target_y = xor128_next_range(guy->park->rng, guy->park->height / 2, s);
+}
+
+void bzzd_target_random_west_edge(struct bzzd_guy *guy)
+{
+	int w, n, s;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = w;
+	guy->target_y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_target_random_east_edge(struct bzzd_guy *guy)
+{
+	int n, e, s;
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = e;
+	guy->target_y = xor128_next_range(guy->park->rng, n, s);
+}
+
+void bzzd_target_random_north_edge(struct bzzd_guy *guy)
+{
+	int w, n, e;
+	w = bzzd_get_park_west(guy->park);
+	n = bzzd_get_park_north(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, e);
+	guy->target_y = n;
+}
+
+void bzzd_target_random_south_edge(struct bzzd_guy *guy)
+{
+	int w, e, s;
+	w = bzzd_get_park_west(guy->park);
+	e = bzzd_get_park_east(guy->park);
+	s = bzzd_get_park_south(guy->park);
+	guy->target_x = xor128_next_range(guy->park->rng, w, e);
+	guy->target_y = s;
+}
+
+void bzzd_target_random_westeast_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_target_random_west_edge(guy);
+	} else {
+		bzzd_target_random_east_edge(guy);
+	}
+}
+
+void bzzd_target_random_northsouth_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_target_random_north_edge(guy);
+	} else {
+		bzzd_target_random_south_edge(guy);
+	}
+}
+
+void bzzd_target_random_edge(struct bzzd_guy *guy)
+{
+	if (xor128_next_unit(guy->park->rng) < 0.5) {
+		bzzd_target_random_westeast_edge(guy);
+	} else {
+		bzzd_target_random_northsouth_edge(guy);
+	}
+}
+
+void bzzd_target_random_marked(struct bzzd_guy *guy)
+{
+	struct point p = ps_rnd(guy->park->markedset, guy->park->rng);
+	guy->target_x = p.x;
+	guy->target_y = p.y;
+}
+
+void bzzd_target_random_fresh(struct bzzd_guy *guy)
+{
+	struct point p = ps_rnd(guy->park->freshset, guy->park->rng);
+	guy->target_x = p.x;
+	guy->target_y = p.y;
+}
+
+/*
 peeing functions.
 */
 
@@ -714,44 +856,358 @@ void bzzd_pee_1(struct bzzd_guy *guy, int pee)
 
 void bzzd_pee_plus(struct bzzd_guy *guy, int pee)
 {
-    bzzd_pee(guy->park, guy->x, guy->y, pee);
-    bzzd_pee(guy->park, guy->x - 1, guy->y, pee);
-    bzzd_pee(guy->park, guy->x, guy->y - 1, pee);
-    bzzd_pee(guy->park, guy->x, guy->y + 1, pee);
-    bzzd_pee(guy->park, guy->x + 1, guy->y, pee);
+	bzzd_pee(guy->park, guy->x, guy->y, pee);
+	bzzd_pee(guy->park, guy->x - 1, guy->y, pee);
+	bzzd_pee(guy->park, guy->x, guy->y - 1, pee);
+	bzzd_pee(guy->park, guy->x, guy->y + 1, pee);
+	bzzd_pee(guy->park, guy->x + 1, guy->y, pee);
 }
 
 void bzzd_pee_x(struct bzzd_guy *guy, int pee)
 {
-    bzzd_pee(guy->park, guy->x, guy->y, pee);
-    bzzd_pee(guy->park, guy->x - 1, guy->y - 1, pee);
-    bzzd_pee(guy->park, guy->x - 1, guy->y + 1, pee);
-    bzzd_pee(guy->park, guy->x + 1, guy->y - 1, pee);
-    bzzd_pee(guy->park, guy->x + 1, guy->y + 1, pee);
+	bzzd_pee(guy->park, guy->x, guy->y, pee);
+	bzzd_pee(guy->park, guy->x - 1, guy->y - 1, pee);
+	bzzd_pee(guy->park, guy->x - 1, guy->y + 1, pee);
+	bzzd_pee(guy->park, guy->x + 1, guy->y - 1, pee);
+	bzzd_pee(guy->park, guy->x + 1, guy->y + 1, pee);
 }
 
 void bzzd_pee_rect(struct bzzd_guy *guy, int hw, int hh, int pee)
 {
-    int x, y;
-    for (x = ceil(guy->x - hw); x <= floor(guy->x + hw); ++x) {
-        for (y = ceil(guy->y - hh); y <= floor(guy->y + hh); ++y) {
-            bzzd_pee(guy->park, x, y, pee);
-        }
-    }
+	int x, y;
+	for (x = ceil(guy->x - hw); x <= floor(guy->x + hw); ++x) {
+		for (y = ceil(guy->y - hh); y <= floor(guy->y + hh); ++y) {
+			bzzd_pee(guy->park, x, y, pee);
+		}
+	}
 }
 
 void bzzd_pee_circle(struct bzzd_guy *guy, int r, int pee)
 {
-    int dx, dy, h, x, y;
+	int dx, dy, h, x, y;
 
-    for (dx = -r; dx <= r; ++dx)
-    {
-        h = floor(sqrt(r * r - dx * dx));
-        for (dy = -h; dy <= h; ++dy)
-        {
-            x = guy->x + dx;
-            y = guy->y + dy;
-            bzzd_pee(guy->park, x, y, pee);
-        }
-    }
+	for (dx = -r; dx <= r; ++dx)
+	{
+		h = floor(sqrt(r * r - dx * dx));
+		for (dy = -h; dy <= h; ++dy)
+		{
+			x = guy->x + dx;
+			y = guy->y + dy;
+			bzzd_pee(guy->park, x, y, pee);
+		}
+	}
 }
+
+/*
+stagger functions.
+*/
+
+void bzzd_stagger_by(struct bzzd_guy *guy, int dx, int dy)
+{
+	int in_bounds, target_in_bounds;
+	in_bounds = bzzd_is_inside_park(guy->park, guy->x, guy->y);
+	target_in_bounds = bzzd_is_inside_park(guy->park, guy->x + dx, guy->y + dy);
+	if (target_in_bounds || (!in_bounds && !target_in_bounds)) {
+		guy->x += dx;
+		guy->y += dy;
+	}
+}
+
+void bzzd_stagger_random(struct bzzd_guy *guy)
+{
+	int dirs[4][2] = {
+		{-1,  0},
+		{ 0, -1},
+		{ 0,  1},
+		{ 1,  0},
+	};
+
+	int *dir = dirs[xor128_next_index(guy->park->rng, 4)];
+	int dx = dir[0];
+	int dy = dir[1];
+
+	bzzd_stagger_by(guy, dx, dy);
+}
+
+/* Okay, so here's the weighted walk algorith. Very sloppy, but I foresee it
+ * changing a lot so I'm not too worried. The algorithm is hard coded and
+ * not optimized... for now.
+ *
+ * The two cases you have in a four directional weighted walk is where the
+ * walker is ON an axis that the target is on, and when the walker is not...
+ * Each case is handled differently.
+ *
+ * === On a same axis ===
+ *
+ * With this weighted walk I desire a spread of 25% for each direction when
+ * weight = 50%. That's right in the middle. In the same axis case there is only
+ * one direction that heads directly to the target, so in order to give it the
+ * proper weight, it's chance of occuring is weight / 2, so at weight = 50%, the
+ * exact chance to go directly towards the target is 25%. What do we do with
+ * the remainding percent and the other three directions? Well the remaining
+ * weight is divided evenly, so each of the three directions gets a 3rd of it
+ * or a (6th of the total since the direct direction took half already). They
+ * also get the left over anti-weight (1 - weight), which is divided evenly so
+ * they get a 3rd of it.
+ *
+ * (X is target, @ is location, W is weight):
+ *                  (W / 6 + (1 - W) / 3)
+ *                          |
+ *                          |
+ * (W / 6 + (1 - W) / 3) ---@--- X (W / 2)
+ *                          |
+ *                          |
+ *                  (W / 6 + (1 - W) / 3)
+ *
+ * For example, when W = 0.75:
+ *         ~20.83%
+ *            |
+ *            |
+ * ~20.83% ---@--- X 37.5%
+ *            |
+ *            |
+ *         ~20.83%
+ *
+ * When W = 1.0:
+ *         ~16.66%
+ *            |
+ *            |
+ * ~16.66% ---@--- X 50%
+ *            |
+ *            |
+ *         ~16.66%
+ *
+ * === Not on a same axis ===
+ *
+ * The same axis is easier, the formula is:
+ *
+ * (X is target, @ is location, W is weight):
+ *             (W / 2)
+ *                |
+ *                |  X
+ * (1 - W) / 2 ---@--- (W / 2)
+ *                |
+ *                |
+ *           (1 - W) / 2
+ *
+ * For example, when W = 0.75:
+ *        37.5%
+ *          |
+ *          |  X
+ * 12.5% ---@--- 37.5%
+ *          |
+ *          |
+ *        12.5%
+ */
+
+void bzzd_stagger_to_target(struct bzzd_guy *guy, double weight)
+{
+	int dx = guy->target_x - guy->x;
+	int dy = guy->target_y - guy->y;
+	double r;
+	int *dpz, *dpnz;
+
+	if (dx >  1) dx = 1;
+	if (dx < -1) dx = -1;
+	if (dy >  1) dy = 1;
+	if (dy < -1) dy = -1;
+
+	r = xor128_next_unit(guy->park->rng);
+
+	if (dx == 0 && dy == 0) {
+		/* On target, do nothing. */
+	} else if (dx == 0 || dy == 0) {
+		if (dx == 0) {
+			dpz = &dx;
+			dpnz = &dy;
+		} else {
+			dpz = &dy;
+			dpnz = &dx;
+		}
+
+		if (r >= (weight * 0.5)) {
+			r -= weight * 0.5;
+			if (r < weight * (1.0 / 6) + (1 - weight) * (1.0 / 3)) {
+				*dpz = -1;
+				*dpnz = 0;
+			} else if (r < weight * (2.0 / 6) + (1 - weight) * (2.0 / 3)) {
+				*dpz = 1;
+				*dpnz = 0;
+			} else {
+				*dpz = 0;
+				*dpnz *= -1;
+			}
+		}
+	} else {
+		if (r < weight * 0.5) {
+			dy = 0;
+		} else if (r < weight) {
+			dx = 0;
+		} else if (r < weight + (1 - weight) * 0.5) {
+			dx *= -1;
+			dy = 0;
+		} else {
+			dx = 0;
+			dy *= -1;
+		}
+	}
+
+	bzzd_stagger_by(guy, dx, dy);
+}
+
+struct line_path_struct {
+	int dx;
+	int sx;
+	int dy;
+	int sy;
+	int err;
+	int e2;
+};
+
+static int line_path(struct bzzd_guy *guy)
+{
+	struct line_path_struct *data = (void *)guy->path_data;
+
+	if (guy->x == guy->target_x && guy->y == guy->target_y)
+		return 0;
+
+	data->e2 = data->err;
+
+	if (data->e2 > -data->dx) {
+		data->err -= data->dy;
+		guy->x += data->sx;
+	}
+	if (data->e2 < data->dy) {
+		data->err += data->dx;
+		guy->y += data->sy;
+	}
+
+	return 1;
+}
+
+void bzzd_line_path_to_target(struct bzzd_guy *guy)
+{
+	struct line_path_struct *data = (void *)guy->path_data;
+
+	data->dx = abs(guy->target_x - guy->x);
+	data->sx = guy->x < guy->target_x ? 1 : -1;
+
+	data->dy = abs(guy->target_y - guy->y);
+	data->sy = guy->y < guy->target_y ? 1 : -1;
+
+	data->err = (data->dx > data->dy ? data->dx : -data->dy) / 2;
+
+	guy->pathing_function = line_path;
+}
+
+enum {NONE, HORIZONTAL, VERTICAL};
+
+struct tunnel_path_struct {
+	int first;
+	int second;
+};
+
+static int tunnel_path(struct bzzd_guy *guy)
+{
+	struct tunnel_path_struct *data = (void *)guy->path_data;
+
+	if (!data->first)
+		return 0;
+
+	if (data->first == HORIZONTAL) {
+		guy->x += (guy->target_x - guy->x) < 0 ? -1 : 1;
+
+		if (guy->x == guy->target_x) {
+			data->first = data->second;
+			data->second = NONE;
+		}
+	} else if (data->first == VERTICAL) {
+		guy->y += (guy->target_y - guy->y) < 0 ? -1 : 1;
+
+		if (guy->y == (guy->target_y - guy->y)) {
+			data->first = data->second;
+			data->second = NONE;
+		}
+	}
+
+	return 1;
+}
+
+void bzzd_tunnel_path_to_target(struct bzzd_guy *guy)
+{
+	struct tunnel_path_struct *data = (void *)guy->path_data;
+
+	int dx = guy->target_x - guy->x;
+	int dy = guy->target_y - guy->y;
+
+	if (dx != 0 && dy != 0) {
+		if (xor128_next_unit(guy->park->rng) < 0.5) {
+			data->first = HORIZONTAL;
+			data->second = VERTICAL;
+		} else {
+			data->first = VERTICAL;
+			data->second = HORIZONTAL;
+		}
+	} else if (dx != 0) {
+		data->first = HORIZONTAL;
+		data->second = NONE;
+	} else if (dy != 0) {
+		data->first = VERTICAL;
+		data->second = NONE;
+	}
+
+	guy->pathing_function = tunnel_path;
+}
+
+int bzzd_walk_path(struct bzzd_guy *guy)
+{
+	if (guy->pathing_function) {
+		if (!guy->pathing_function(guy)) {
+			bzzd_cancel_path(guy);
+		}
+
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+void bzzd_cancel_path(struct bzzd_guy *guy)
+{
+	guy->pathing_function = NULL;
+}
+
+/*
+
+*/
+
+int bzzd_is_on_marked(struct bzzd_guy *guy)
+{
+	return bzzd_is_marked_spot(guy->park, guy->x, guy->y);
+}
+
+int bzzd_is_on_fresh(struct bzzd_guy *guy)
+{
+	return bzzd_is_fresh_spot(guy->park, guy->x, guy->y);
+}
+
+int bzzd_is_on_target(struct bzzd_guy *guy)
+{
+	return guy->x == guy->target_x && guy->y == guy->target_y;
+}
+
+int bzzd_is_on_fixed(struct bzzd_guy *guy, int x, int y)
+{
+	return guy->x == x && guy->y == y;
+}
+
+int bzzd_is_on_fixed_x(struct bzzd_guy *guy, int x)
+{
+	return guy->x == x;
+}
+
+int bzzd_is_on_fixed_y(struct bzzd_guy *guy, int y)
+{
+	return guy->y == y;
+}
+
