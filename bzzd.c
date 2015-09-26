@@ -254,6 +254,7 @@ struct bzzd_park {
 	int width, height;
 
 	int fence;
+	int threshold;
 
 	int owns_spots;
 };
@@ -297,6 +298,7 @@ struct bzzd_park *bzzd_open_park(int *spots, int w, int h)
 	park->height = h;
 
 	park->fence = 0;
+	park->threshold = 0;
 
 	park->owns_spots = 0;
 
@@ -359,7 +361,9 @@ void bzzd_close_park(struct bzzd_park *park)
 	free(park->rng);
 	free(park->markedset);
 	free(park->freshset);
-	free(park->spots);
+	if (park->owns_spots) {
+		free(park->spots);
+	}
 	free(park);
 }
 
@@ -432,12 +436,22 @@ int bzzd_is_fresh_spot(struct bzzd_park *park, int x, int y)
 	return ps_has(park->freshset, make_point(x, y));
 }
 
+int bzzd_get_pee_threshold(struct bzzd_park *park)
+{
+	return park->threshold;
+}
+
+void bzzd_set_pee_threshold(struct bzzd_park *park, int pee)
+{
+	park->threshold = pee;
+}
+
 void bzzd_pee(struct bzzd_park *park, int x, int y, int pee)
 {
 	if (bzzd_is_inside_park(park, x, y)) {
 		if (pee >= 1) {
 			ps_add(park->freshset, make_point(x, y));
-		} else if (pee <= 0) {
+		} else if (pee <= park->threshold) {
 			ps_rem(park->freshset, make_point(x, y));
 			ps_rem(park->markedset, make_point(x, y));
 		}
@@ -485,6 +499,13 @@ void bzzd_find_random_marked_spot(struct bzzd_park *park, int *x, int *y)
 	*y = p.y;
 }
 
+void bzzd_find_random_fresh_spot(struct bzzd_park *park, int *x, int *y)
+{
+	struct point p = ps_rnd(park->freshset, park->rng);
+	*x = p.x;
+	*y = p.y;
+}
+
 /*******************************************************************************
 
 buzzed guy.
@@ -520,30 +541,6 @@ alloc_failure:
 void bzzd_blackout(struct bzzd_guy *guy)
 {
 	free(guy);
-}
-
-void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y)
-{
-	if (x) *x = guy->x;
-	if (y) *y = guy->y;
-}
-
-void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y)
-{
-	if (x) *x = guy->target_x;
-	if (y) *y = guy->target_y;
-}
-
-void bzzd_set_coords(struct bzzd_guy *guy, int x, int y)
-{
-	guy->x = x;
-	guy->y = y;
-}
-
-void bzzd_set_target(struct bzzd_guy *guy, int x, int y)
-{
-	guy->target_x = x;
-	guy->target_y = y;
 }
 
 /*

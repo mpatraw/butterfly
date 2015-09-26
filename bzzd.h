@@ -30,6 +30,8 @@ void bzzd_set_spot(struct bzzd_park *park, int x, int y, int to);
 int bzzd_is_inside_park(struct bzzd_park *park, int x, int y);
 int bzzd_is_marked_spot(struct bzzd_park *park, int x, int y);
 int bzzd_is_fresh_spot(struct bzzd_park *park, int x, int y);
+int bzzd_get_pee_threshold(struct bzzd_park *park);
+void bzzd_set_pee_threshold(struct bzzd_park *park, int pee);
 void bzzd_pee(struct bzzd_park *park, int x, int y, int pee);
 void bzzd_dry_fresh(struct bzzd_park *park);
 void bzzd_set_fence_size(struct bzzd_park *park, int size);
@@ -37,13 +39,10 @@ int bzzd_get_fence_size(struct bzzd_park *park);
 int bzzd_count_marked(struct bzzd_park *park);
 double bzzd_percent_park_marked(struct bzzd_park *park);
 void bzzd_find_random_marked_spot(struct bzzd_park *park, int *x, int *y);
+void bzzd_find_random_fresh_spot(struct bzzd_park *park, int *x, int *y);
 
 struct bzzd_guy *bzzd_binge(struct bzzd_park *park);
 void bzzd_blackout(struct bzzd_guy *guy);
-void bzzd_get_coords(struct bzzd_guy *guy, int *x, int *y);
-void bzzd_get_target(struct bzzd_guy *guy, int *x, int *y);
-void bzzd_set_coords(struct bzzd_guy *guy, int x, int y);
-void bzzd_set_target(struct bzzd_guy *guy, int x, int y);
 
 void bzzd_wakeup_fixed(struct bzzd_guy *guy, int x, int y);
 void bzzd_wakeup_random(struct bzzd_guy *guy);
