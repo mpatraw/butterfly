@@ -437,7 +437,7 @@ void bzzd_pee(struct bzzd_park *park, int x, int y, int pee)
 	if (bzzd_is_inside_park(park, x, y)) {
 		if (pee >= 1) {
 			ps_add(park->freshset, make_point(x, y));
-		} else if (pee <= -1) {
+		} else if (pee <= 0) {
 			ps_rem(park->freshset, make_point(x, y));
 			ps_rem(park->markedset, make_point(x, y));
 		}
