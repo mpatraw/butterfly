@@ -1,3 +1,37 @@
 # bzzd
 
 A smarter drunkard's walk.
+
+# algorithm
+
+The algorithm for generating maps is done with a drunken walk, except with more control. In a drunken walk algorithm, the drunk starts somewhere and just randomly walks around digging away, and stops at some specified time. In *bzzd* you have much more control over how the drunk acts, hence the name. Drunk, but less so: buzzed (or bzzd for short).
+
+A drunken walk can be broken down into several components: where to start, dig loop, step loop, and when to stop. *bzzd* is very powerful, but only exposes a couple functions, mostly dealing with controlling these components.
+
+```
+bzzd_park *bzzd_new_park(int width, int height);
+bzzd_park *bzzd_open_park(int width, int height, int *spots);
+int *bzzd_get_park_spots(bzzd_park *);
+void bzzd_close_park(bzzd_park *)
+bzzd_guy *bzzd_enter_park(bzzd_park *)
+void bzzd_leave_park(bzzd_guy *)
+void bzzd_guy_add_trigger(bzzd_guy *, int trigger, int option, ...);
+void bzzd_guy_clear_trigger(bzzd_guy *, int trigger);
+void bzzd_guy_go(bzzd_guy *, int times);
+```
+
+Triggers are how the buzzed guy is controlled, there are only a few triggers, but a lot of options.
+
+ON_WAKING_UP
+	WAKEUP_RANDOM_SPOT
+WHEN_TO_PASSOUT
+	PASSOUT_WHEN_ON_MARKED
+	PASSOUT_WHEN_HIT_FENCE
+	PASSOUT_WHEN_ON_OTHER_GUYS_PEE
+ON_STAGGERING
+	STAGGER_TOWARDS_MARKED
+	STAGGER_IN_STRAIGHT_PATH
+ON_PEEING
+	PEE_PLUS_SYMBOL
+
+

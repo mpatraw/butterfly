@@ -1,0 +1,34 @@
+ifeq (@(TUP_PLATFORM),linux)
+	error Linux not supported.
+endif
+ifeq (@(TUP_PLATFORM),win32)
+	error Win32 not supported.
+endif
+ifeq (@(TUP_PLATFORM),solaris)
+	error SOLARIS not supported.
+endif
+ifeq (@(TUP_PLATFORM),freebsd)
+	error FreeBSD not supported.
+endif
+ifeq (@(TUP_PLATFORM),maxosx)
+	CFLAGS += -DMACOSX
+endif
+
+CFLAGS += -std=c99
+CFLAGS += -Iinclude
+CFLAGS += -Ivendor
+ifeq (@(BUILD),DEBUG)
+	CFLAGS += -Wall
+	CFLAGS += -Wextra
+	CFLAGS += -g
+	CFLAGS += -pedantic
+endif
+ifeq (@(BUILD),RELEASE)
+	CFLAGS += -O2
+	CFLAGS += -s
+endif
+LDFLAGS += -Lvendor
+!cc = |> ^ cc %f -o %o^ gcc $(CFLAGS) -c %f -o %o |>
+!bltexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -lBearLibTerminal %f -o %o |>
+!exe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) %f -o %o |>
+!ar = |> ar rcs %o %f |>
