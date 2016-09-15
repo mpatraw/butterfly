@@ -4,5 +4,6 @@ include_rules
 : foreach examples/*.c |> !cc |> examples/%B.o
 : src/*.o |> !ar |> lib/libbutterfly.a
 : examples/ex1.o lib/libbutterfly.a |> !exe |> examples/ex1
-: examples/ex2.o lib/libbutterfly.a |> !bltexe |> examples/ex2
+: examples/ex2.o lib/libbutterfly.a |> !exe |> examples/ex2
 : examples/ex3.o lib/libbutterfly.a |> !exe |> examples/ex3
+: examples/ex4.o lib/libbutterfly.a |> !bltexe |> examples/ex4

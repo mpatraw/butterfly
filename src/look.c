@@ -99,11 +99,11 @@ void look(
 	case BF_LOOK_RECT_AREA:
 		w = instinct->args[1];
 		h = instinct->args[2];
-		for (	x = ceil(bf->x - w);
-			x <= floor(bf->x + w);
+		for (	x = bf->x - w;
+			x <= bf->x + w;
 			++x) {
-			for (	y = ceil(bf->y - h);
-				y <= floor(bf->y + h);
+			for (	y = bf->y - h;
+				y <= bf->y + h;
 				++y) {
 				set_new_spot(
 					bf->new_spots,

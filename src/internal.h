@@ -105,12 +105,18 @@ void ps_clr(struct pointset *ps);
 #define SPOT_AT(arr, w, x, y) ((arr)[(y) * (w) + (x)])
 
 struct butterfly {
+	const char *error;
+	void *path_data;
 	int *new_spots;
 	int x;
 	int y;
 	int goal_x;
 	int goal_y;
 	int death_timer;
+	int last_morph_x;
+	int last_morph_y;
+	int last_death_x;
+	int last_death_y;
 };
 
 void morph(

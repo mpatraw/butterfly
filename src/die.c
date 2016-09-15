@@ -25,7 +25,7 @@ int die(
 	case BF_DIE_AT_GOAL:
 		return bf->x == bf->goal_x && bf->y == bf->goal_y;
 
-	case BF_DIE_AFTER_N_FLUTTERS:
+	case BF_DIE_AFTER_N:
 		if (bf->death_timer == instinct->args[0]) {
 			return 1;
 		}

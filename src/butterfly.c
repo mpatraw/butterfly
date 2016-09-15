@@ -90,9 +90,10 @@ rng_state_failure:
 	return -1;
 }
 
-static void reset_butterfly(struct butterfly *bf, struct bf_farm *farm)
+static void reset_butterfly(struct butterfly *bf)
 {
-	(void)farm;
+	free(bf->path_data);
+	bf->path_data = NULL;
 	/* this means there is no goal spot */
 	bf->goal_x = -1;
 	bf->goal_y = -1;
@@ -136,6 +137,10 @@ static void do_morph_actions(
 		instincts, count,
 		BF_MORPH);
 
+	if (nmorphs == 0) {
+		return;
+	}
+
 	r = random_next_index(farm->rng_state, nmorphs);
 	morph(bf, farm, &morphs[r]);
 }
@@ -150,11 +155,14 @@ static void do_goal_actions(
 	size_t ngoals;
 	size_t r;
 
-
 	copy_instincts_with_event(
 		goals, &ngoals,
 		instincts, count,
 		BF_GOAL);
+
+	if (ngoals == 0) {
+		return;
+	}
 
 	r = random_next_index(farm->rng_state, ngoals);
 	goal(bf, farm, &goals[r]);
@@ -199,6 +207,10 @@ static void do_look_actions(
 		instincts, count,
 		BF_LOOK);
 
+	if (nlooks == 0) {
+		return;
+	}
+
 	r = random_next_index(farm->rng_state, nlooks);
 	look(bf, farm, &looks[r]);
 }
@@ -217,6 +229,10 @@ static void do_flutter_actions(
 		flutters, &nflutters,
 		instincts, count,
 		BF_FLUTTER);
+
+	if (nflutters == 0) {
+		return;
+	}
 
 	r = random_next_index(farm->rng_state, nflutters);
 	flutter(bf, farm, &flutters[r]);
@@ -261,17 +277,26 @@ int bf_spawn(
 
 	bf = farm->butterfly;
 
-	reset_butterfly(bf, farm);
+	reset_butterfly(bf);
 
 	do_morph_actions(bf, farm, instincts, count);
 	do_goal_actions(bf, farm, instincts, count);
 
-	int i = 0;
+	bf->last_morph_x = bf->x;
+	bf->last_morph_y = bf->y;
+
 	while (!check_if_should_die(bf, farm, instincts, count)) {
 		do_look_actions(bf, farm, instincts, count);
-		printf("here %d\n", i++);
 		do_flutter_actions(bf, farm, instincts, count);
 	}
+
+	/* include end if we didn't move */
+	if (bf->x != bf->last_morph_x || bf->y != bf->last_morph_y) {
+		do_look_actions(bf, farm, instincts, count);
+	}
+
+	bf->last_death_x = bf->x;
+	bf->last_death_y = bf->y;
 
 	commit_new_spots(bf, farm);
 
@@ -281,6 +306,8 @@ int bf_spawn(
 
 void bf_cleanup(struct bf_farm *farm)
 {
+	struct butterfly *bf;
+
 	if (!farm->is_init) {
 		return;
 	}
@@ -289,7 +316,9 @@ void bf_cleanup(struct bf_farm *farm)
 	free(farm->safe_spots);
 	ps_uninit(farm->dangerous_spots);
 	free(farm->dangerous_spots);
-	free(((struct butterfly *)farm->butterfly)->new_spots);
+	bf = farm->butterfly;
+	free(bf->new_spots);
+	free(bf->path_data);
 	free(farm->butterfly);
 	farm->is_init = 0;
 }
