@@ -119,6 +119,12 @@ struct bf_config {
 	 * default = false
 	 */
 	int cancel_on_looking_at_safe;
+
+	/* this cycles through all the looking instincts instead of
+	 * randomly selecting one.
+	 * default = false
+	 */
+	int cycle_looking;
 };
 
 #ifdef __cplusplus
@@ -139,9 +145,6 @@ void bf_cleanup(struct bf_farm *farm);
 
 #define BF_SPAWN_ARR(farm, inst, config)	\
 	bf_spawn(farm, inst, sizeof(inst) / sizeof(*inst), config)
-
-#define BF_SPAWN_SZ(farm, inst, sz, config, ntimes)	\
-	bf_spawn(farm, inst, sz, config)
 
 
 #endif

@@ -210,7 +210,7 @@ static void do_look_actions(
 {
 	struct bf_instinct looks[count];
 	size_t nlooks;
-	size_t r;
+	static size_t r = 0;
 
 	copy_instincts_with_event(
 		looks, &nlooks,
@@ -221,8 +221,13 @@ static void do_look_actions(
 		return;
 	}
 
-	r = random_next_index(farm->rng_state, nlooks);
-	look(bf, farm, &looks[r]);
+	if (bf->config && bf->config->cycle_looking) {
+		look(bf, farm, &looks[r]);
+		r = (r + 1) % nlooks;
+	} else {
+		r = random_next_index(farm->rng_state, nlooks);
+		look(bf, farm, &looks[r]);
+	}
 }
 
 static void do_flutter_actions(
@@ -233,7 +238,6 @@ static void do_flutter_actions(
 {
 	struct bf_instinct flutters[count];
 	size_t nflutters;
-	size_t r;
 
 	copy_instincts_with_event(
 		flutters, &nflutters,
@@ -244,8 +248,8 @@ static void do_flutter_actions(
 		return;
 	}
 
-	r = random_next_index(farm->rng_state, nflutters);
-	flutter(bf, farm, &flutters[r]);
+	/* only one flutter instinct allowed */
+	flutter(bf, farm, &flutters[0]);
 }
 
 static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)

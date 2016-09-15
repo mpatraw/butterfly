@@ -29,11 +29,15 @@ int main(void)
 		.spots = (void *)spots,
 		.width = 80,
 		.height = 25,
-		.seed = 1473979560
+		.seed = 0
 	};
 	struct bf_instinct room[] = {
 		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
 		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
+		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 3, 3}},
+		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 3}},
+		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 4}},
+		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 6}},
 		{.event = BF_DIE, .action = BF_DIE_AFTER_N, .args = {1}},
 	};
 	struct bf_instinct tunnel[] = {
@@ -46,7 +50,8 @@ int main(void)
 
 	BF_SPAWN_ARR(&farm, room, NULL);
 	bf_commit(&farm);
-	for (int i = 0; i < 3; ++i) {
+	printf("seed: %d\n", farm.seed);
+	for (int i = 0; i < 15; ++i) {
 		if (BF_SPAWN_ARR(&farm, room, &config)) {
 			continue;
 		}
