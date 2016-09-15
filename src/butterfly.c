@@ -10,6 +10,7 @@
 
 static int ensure_farm_is_init(struct bf_farm *farm)
 {
+	struct butterfly *bf;
 	struct point point;
 	int x, y;
 
@@ -53,9 +54,30 @@ static int ensure_farm_is_init(struct bf_farm *farm)
 		}
 	}
 
+	farm->butterfly = malloc(sizeof(struct butterfly));
+	if (!farm->butterfly) {
+		goto butterfly_alloc_failure;
+	}
+	bf = farm->butterfly;
+
+	memset(bf, 0, sizeof(*bf));
+	bf->new_spots = malloc(
+		sizeof(*bf->new_spots) * farm->width * farm->height);
+	if (!bf->new_spots) {
+		goto butterfly_new_spots_alloc_failure;
+	}
+	memcpy(
+		bf->new_spots,
+		farm->spots,
+		sizeof(*bf->new_spots) * farm->width * farm->height);
+
 	farm->is_init = 1;
 	return 0;
 
+butterfly_new_spots_alloc_failure:
+	free(farm->butterfly);
+butterfly_alloc_failure:
+	ps_uninit(farm->dangerous_spots);
 dangerous_spots_init_failure:
 	free(farm->dangerous_spots);
 dangerous_spots_alloc_failure:
@@ -66,6 +88,14 @@ safe_spots_alloc_failure:
 	free(farm->rng_state);
 rng_state_failure:
 	return -1;
+}
+
+static void reset_butterfly(struct butterfly *bf, struct bf_farm *farm)
+{
+	(void)farm;
+	/* this means there is no goal spot */
+	bf->goal_x = -1;
+	bf->goal_y = -1;
 }
 
 static void copy_instincts_with_event(
@@ -120,6 +150,7 @@ static void do_goal_actions(
 	size_t ngoals;
 	size_t r;
 
+
 	copy_instincts_with_event(
 		goals, &ngoals,
 		instincts, count,
@@ -135,19 +166,19 @@ static bool check_if_should_die(
 	struct bf_instinct *instincts,
 	size_t count)
 {
-	struct bf_instinct goals[count];
-	size_t ngoals;
+	struct bf_instinct deaths[count];
+	size_t ndeaths;
 	size_t i;
 	bool should_die = false;
 
 	copy_instincts_with_event(
-		goals, &ngoals,
+		deaths, &ndeaths,
 		instincts, count,
 		BF_DIE);
 
-	for (i = 0; i < ngoals; ++i) {
+	for (i = 0; i < ndeaths; ++i) {
 		/* ensure each check is run */
-		should_die = should_die || die(bf, farm, &goals[i]);
+		should_die = should_die || die(bf, farm, &deaths[i]);
 	}
 
 	return should_die;
@@ -222,35 +253,27 @@ int bf_spawn(
 	struct bf_instinct *instincts,
 	size_t count)
 {
+	struct butterfly *bf;
+
 	if (ensure_farm_is_init(farm)) {
 		return -1;
 	}
 
-	struct butterfly bf;
-	memset(&bf, 0, sizeof(bf));
-	bf.new_spots = malloc(
-		sizeof(*bf.new_spots) * farm->width * farm->height);
-	if (!bf.new_spots) {
-		return -1;
-	}
-	memcpy(
-		bf.new_spots,
-		farm->spots,
-		sizeof(*bf.new_spots) * farm->width * farm->height);
+	bf = farm->butterfly;
 
-	do_morph_actions(&bf, farm, instincts, count);
-	do_goal_actions(&bf, farm, instincts, count);
+	reset_butterfly(bf, farm);
+
+	do_morph_actions(bf, farm, instincts, count);
+	do_goal_actions(bf, farm, instincts, count);
 
 	int i = 0;
-	while (!check_if_should_die(&bf, farm, instincts, count)) {
-		do_look_actions(&bf, farm, instincts, count);
+	while (!check_if_should_die(bf, farm, instincts, count)) {
+		do_look_actions(bf, farm, instincts, count);
 		printf("here %d\n", i++);
-		do_flutter_actions(&bf, farm, instincts, count);
+		do_flutter_actions(bf, farm, instincts, count);
 	}
 
-	commit_new_spots(&bf, farm);
-
-	free(bf.new_spots);
+	commit_new_spots(bf, farm);
 
 	return 0;
 }
@@ -266,5 +289,7 @@ void bf_cleanup(struct bf_farm *farm)
 	free(farm->safe_spots);
 	ps_uninit(farm->dangerous_spots);
 	free(farm->dangerous_spots);
+	free(((struct butterfly *)farm->butterfly)->new_spots);
+	free(farm->butterfly);
 	farm->is_init = 0;
 }

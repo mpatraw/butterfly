@@ -89,6 +89,7 @@ struct bf_farm {
 	void *rng_state;
 	void *safe_spots;
 	void *dangerous_spots;
+	void *butterfly;
 };
 
 struct bf_instinct {
@@ -110,6 +111,22 @@ void bf_cleanup(struct bf_farm *farm);
 #ifdef __cplusplus
 }
 #endif
+
+#define BF_SPAWN_ARR(farm, inst, ntimes) 					\
+do {														\
+	int i;													\
+	for (i = 0; i < (ntimes); ++i) {						\
+		bf_spawn(farm, inst, sizeof(inst) / sizeof(*inst));	\
+	}														\
+} while (0)
+
+#define BF_SPAWN_SZ(farm, inst, sz, ntimes) 				\
+do {														\
+	int i;													\
+	for (i = 0; i < (ntimes); ++i) {						\
+		bf_spawn(farm, inst, sz);							\
+	}														\
+} while (0)
 
 
 #endif

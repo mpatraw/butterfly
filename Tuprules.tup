@@ -1,14 +1,14 @@
 ifeq (@(TUP_PLATFORM),linux)
-	error Linux not supported.
+	CFLAGS += -DLINUX
 endif
 ifeq (@(TUP_PLATFORM),win32)
-	error Win32 not supported.
+	CFLAGS += -DWIN32
 endif
 ifeq (@(TUP_PLATFORM),solaris)
-	error SOLARIS not supported.
+	CFLAGS += -DSOLARIS
 endif
 ifeq (@(TUP_PLATFORM),freebsd)
-	error FreeBSD not supported.
+	CFLAGS += -DFREEBSD
 endif
 ifeq (@(TUP_PLATFORM),maxosx)
 	CFLAGS += -DMACOSX

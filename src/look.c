@@ -11,7 +11,6 @@ static void set_new_spot(int *new_spots, int x, int y, int w, int h, int to)
 	}
 
 	SPOT_AT(new_spots, w, x, y) = to;
-	printf("set %d, %d to %d", x, y, to);
 }
 
 void look(

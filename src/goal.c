@@ -110,9 +110,6 @@ void goal(
 		break;
 
 	default:
-		/* this means there is no goal spot */
-		bf->goal_x = -1;
-		bf->goal_y = -1;
 		break;
 	}
 }
