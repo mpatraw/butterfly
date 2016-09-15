@@ -106,7 +106,7 @@ void ps_clr(struct pointset *ps);
 #define SPOT_AT(arr, w, x, y) ((arr)[(y) * (w) + (x)])
 
 struct butterfly {
-	const char *error;
+	struct bf_config *config;
 	void *path_data;
 	int *new_spots;
 	int x;

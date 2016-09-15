@@ -90,8 +90,17 @@ rng_state_failure:
 	return -1;
 }
 
-static void reset_butterfly(struct butterfly *bf)
+static void reset_butterfly(
+	struct butterfly *bf,
+	struct bf_farm *farm,
+	bool full)
 {
+	if (full) {
+		memcpy(
+			bf->new_spots,
+			farm->spots,
+			sizeof(*bf->new_spots) * farm->width * farm->height);
+	}
 	free(bf->path_data);
 	bf->path_data = NULL;
 	/* this means there is no goal spot */
@@ -268,7 +277,8 @@ static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)
 int bf_spawn(
 	struct bf_farm *farm,
 	struct bf_instinct *instincts,
-	size_t count)
+	size_t count,
+	struct bf_config *config)
 {
 	struct butterfly *bf;
 
@@ -276,22 +286,37 @@ int bf_spawn(
 		return -1;
 	}
 
+	farm->error = BF_ERROR_NONE;
 	bf = farm->butterfly;
-
-	reset_butterfly(bf);
+	bf->config = config;
 
 	do_morph_actions(bf, farm, instincts, count);
+	if (farm->error) {
+		goto error;
+	}
 	do_goal_actions(bf, farm, instincts, count);
+	if (farm->error) {
+		goto error;
+	}
 
 	bf->last_morph_x = bf->x;
 	bf->last_morph_y = bf->y;
 
 	while (!check_if_should_die(bf, farm, instincts, count)) {
+		if (farm->error) {
+			goto error;
+		}
 		do_look_actions(bf, farm, instincts, count);
+		if (farm->error) {
+			goto error;
+		}
 		do_flutter_actions(bf, farm, instincts, count);
+		if (farm->error) {
+			goto error;
+		}
 	}
 
-	/* include end if we didn't move */
+	/* include end if we moved */
 	if (bf->x != bf->last_morph_x || bf->y != bf->last_morph_y) {
 		do_look_actions(bf, farm, instincts, count);
 	}
@@ -299,11 +324,20 @@ int bf_spawn(
 	bf->last_death_x = bf->x;
 	bf->last_death_y = bf->y;
 
-	commit_new_spots(bf, farm);
+	reset_butterfly(bf, farm, false);
 
 	return 0;
+
+error:
+	reset_butterfly(bf, farm, true);
+	return -1;
 }
 
+void bf_commit(struct bf_farm *farm)
+{
+	struct butterfly *bf = farm->butterfly;
+	commit_new_spots(bf, farm);
+}
 
 void bf_cleanup(struct bf_farm *farm)
 {

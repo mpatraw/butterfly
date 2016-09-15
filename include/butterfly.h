@@ -84,11 +84,20 @@ enum {
 	BF_DIE_AFTER_N
 };
 
+enum {
+	BF_ERROR_NONE,
+	BF_ERROR_NO_MEM,
+	BF_CANCEL
+};
+
 struct bf_farm {
 	int *spots;
 	int width;
 	int height;
 	int seed;
+
+	/* 0 if no error */
+	int error;
 
 	/* internal */
 	int is_init;
@@ -104,6 +113,14 @@ struct bf_instinct {
 	int args[BF_NARGS];
 };
 
+struct bf_config {
+	/* this will make the butterflies cancel when they
+	 * look at a safe location (to prevent overwrites)
+	 * default = false
+	 */
+	int cancel_on_looking_at_safe;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -111,28 +128,20 @@ extern "C" {
 int bf_spawn(
 	struct bf_farm *farm,
 	struct bf_instinct *instincts,
-	size_t count);
+	size_t count,
+	struct bf_config *config);
+void bf_commit(struct bf_farm *farm);
 void bf_cleanup(struct bf_farm *farm);
 
 #ifdef __cplusplus
 }
 #endif
 
-#define BF_SPAWN_ARR(farm, inst, ntimes) 					\
-do {														\
-	int i;													\
-	for (i = 0; i < (ntimes); ++i) {						\
-		bf_spawn(farm, inst, sizeof(inst) / sizeof(*inst));	\
-	}														\
-} while (0)
+#define BF_SPAWN_ARR(farm, inst, config)	\
+	bf_spawn(farm, inst, sizeof(inst) / sizeof(*inst), config)
 
-#define BF_SPAWN_SZ(farm, inst, sz, ntimes) 				\
-do {														\
-	int i;													\
-	for (i = 0; i < (ntimes); ++i) {						\
-		bf_spawn(farm, inst, sz);							\
-	}														\
-} while (0)
+#define BF_SPAWN_SZ(farm, inst, sz, config, ntimes)	\
+	bf_spawn(farm, inst, sz, config)
 
 
 #endif

@@ -4,13 +4,25 @@
 #include "butterfly.h"
 #include "internal.h"
 
-static void set_new_spot(int *new_spots, int x, int y, int w, int h, int to)
+static void set_new_spot(
+	struct bf_farm *farm,
+	int x, int y,
+	int to)
 {
-	if (x < 0 || x >= w || y < 0 || y >= h) {
+	struct butterfly *bf;
+
+	if (x < 0 || x >= farm->width || y < 0 || y >= farm->height) {
 		return;
 	}
 
-	SPOT_AT(new_spots, w, x, y) = to;
+	bf = farm->butterfly;
+
+	if (	bf->config && bf->config->cancel_on_looking_at_safe &&
+		SPOT_AT(farm->spots, farm->width, x, y) > 0) {
+		farm->error = BF_CANCEL;
+	}
+
+	SPOT_AT(bf->new_spots, farm->width, x, y) = to;
 }
 
 void look(
@@ -26,73 +38,64 @@ void look(
 	case BF_LOOK_EVERYWHERE:
 		for (x = 0; x < farm->width; ++x) {
 			for (y = 0; y < farm->height; ++y) {
-				SPOT_AT(bf->new_spots, farm->width, x, y) =
-					instinct->args[0];
+				set_new_spot(
+					farm,
+					x, y,
+					instinct->args[0]);
 			}
 		}
 		break;
 
 	case BF_LOOK_1_AREA:
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x, bf->y,
-			farm->width, farm->height,
 			instinct->args[0]);
 		break;
 
 	case BF_LOOK_PLUS_AREA:
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x - 1, bf->y,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x, bf->y - 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x, bf->y,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x, bf->y + 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x + 1, bf->y,
-			farm->width, farm->height,
 			instinct->args[0]);
 		break;
 
 	case BF_LOOK_X_AREA:
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x - 1, bf->y - 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x - 1, bf->y + 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x, bf->y,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x + 1, bf->y - 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		set_new_spot(
-			bf->new_spots,
+			farm,
 			bf->x + 1, bf->y + 1,
-			farm->width, farm->height,
 			instinct->args[0]);
 		break;
 
@@ -106,9 +109,8 @@ void look(
 				y <= bf->y + h;
 				++y) {
 				set_new_spot(
-					bf->new_spots,
+					farm,
 					x, y,
-					farm->width, farm->height,
 					instinct->args[0]);
 			}
 		}
@@ -121,9 +123,8 @@ void look(
 			h = floor(sqrt(r * r - x * x));
 			for (y = -h; y <= h; ++y) {
 				set_new_spot(
-					bf->new_spots,
+					farm,
 					bf->x + x, bf->y + y,
-					farm->width, farm->height,
 					instinct->args[0]);
 			}
 		}

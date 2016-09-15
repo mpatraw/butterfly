@@ -254,7 +254,7 @@ void flutter(
 		if (!bf->path_data) {
 			bf->path_data = malloc(sizeof(struct tunnel_path));
 			if (!bf->path_data) {
-				bf->error = "no mem";
+				farm->error = BF_ERROR_NO_MEM;
 				return;
 			}
 			struct tunnel_path *data = (void *)bf->path_data;
@@ -287,7 +287,7 @@ void flutter(
 		if (!bf->path_data) {
 			bf->path_data = malloc(sizeof(struct line_path));
 			if (!bf->path_data) {
-				bf->error = "no mem";
+				farm->error = BF_ERROR_NO_MEM;
 				return;
 			}
 			struct line_path *data = bf->path_data;

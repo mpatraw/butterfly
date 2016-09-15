@@ -22,39 +22,36 @@ static struct tile_def tile_defs[] = {
 int main(void)
 {
 	int spots[25][80] = {{WALL}};
+	struct bf_config config = {
+		.cancel_on_looking_at_safe = 1
+	};
 	struct bf_farm farm = {
 		.spots = (void *)spots,
 		.width = 80,
-		.height = 25
-	};
-	struct bf_instinct start[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
-	};
-	struct bf_instinct tunnel[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
+		.height = 25,
+		.seed = 1473979560
 	};
 	struct bf_instinct room[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
 		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
 		{.event = BF_DIE, .action = BF_DIE_AFTER_N, .args = {1}},
 	};
-	BF_SPAWN_ARR(&farm, start, 1);
-	for (int i = 0; i < 15; ++i) {
-		BF_SPAWN_ARR(&farm, room, 1);
-		BF_SPAWN_ARR(&farm, tunnel, 1);
-		BF_SPAWN_ARR(&farm, room, 1);
-		BF_SPAWN_ARR(&farm, tunnel, 1);
-		BF_SPAWN_ARR(&farm, room, 1);
-		BF_SPAWN_ARR(&farm, tunnel, 1);
-		BF_SPAWN_ARR(&farm, room, 1);
+	struct bf_instinct tunnel[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
+		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+	};
+
+	BF_SPAWN_ARR(&farm, room, NULL);
+	bf_commit(&farm);
+	for (int i = 0; i < 3; ++i) {
+		if (BF_SPAWN_ARR(&farm, room, &config)) {
+			continue;
+		}
+		BF_SPAWN_ARR(&farm, tunnel, NULL);
+		bf_commit(&farm);
 	}
 
 	terminal_open();

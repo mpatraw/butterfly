@@ -28,8 +28,8 @@ int main(void)
 		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
 		{.event = BF_DIE, .action = BF_DIE_AFTER_N, .args = {1}},
 	};
-	BF_SPAWN_ARR(&farm, instincts, 1);
-	BF_SPAWN_ARR(&farm, instincts2, 1);
+	BF_SPAWN_ARR(&farm, instincts, NULL);
+	BF_SPAWN_ARR(&farm, instincts2, NULL);
 
 	for (int y = 0; y < 24; ++y) {
 		for (int x = 0; x < 80; ++x) {
