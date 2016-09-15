@@ -97,6 +97,7 @@ static void reset_butterfly(struct butterfly *bf)
 	/* this means there is no goal spot */
 	bf->goal_x = -1;
 	bf->goal_y = -1;
+	bf->death_timer = 0;
 }
 
 static void copy_instincts_with_event(

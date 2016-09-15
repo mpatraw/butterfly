@@ -1,6 +1,7 @@
 #ifndef BZZD_INTERNAL_H
 #define BZZD_INTERNAL_H
 
+#include <stdbool.h>
 #include <limits.h>
 
 #include "butterfly.h"
@@ -135,7 +136,7 @@ void flutter(
 	struct butterfly *bf,
 	struct bf_farm *farm,
 	struct bf_instinct *instinct);
-int die(
+bool die(
 	struct butterfly *bf,
 	struct bf_farm *farm,
 	struct bf_instinct *instinct);

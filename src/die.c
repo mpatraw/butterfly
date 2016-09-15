@@ -2,7 +2,7 @@
 #include "butterfly.h"
 #include "internal.h"
 
-int die(
+bool die(
 	struct butterfly *bf,
 	struct bf_farm *farm,
 	struct bf_instinct *instinct)
@@ -27,7 +27,7 @@ int die(
 
 	case BF_DIE_AFTER_N:
 		if (bf->death_timer == instinct->args[0]) {
-			return 1;
+			return true;
 		}
 		bf->death_timer++;
 		break;
@@ -36,5 +36,5 @@ int die(
 		break;
 	}
 
-	return 0;
+	return false;
 }
