@@ -6,7 +6,7 @@
 
 # Building
 
-**Butterfly** uses [tup](http://gittup.org/tup/) for it's build system and running `tup upd` should give you everything you need and build all of the examples.
+**Butterfly** uses [tup](http://gittup.org/tup/) for its build system and running `tup upd` should give you everything you need and build all of the examples.
 
 # Algorithm
 
@@ -16,11 +16,11 @@
 
 The steps are:
 
-* **Morph** (Optional) - This is where the butterfly starts it's "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
+* **Morph** (Optional) - This is where the butterfly starts its "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
 * **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
 * **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line. Only *one* flutter instinct per instinct list.
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
-* **Die** (Required) - This is how the butterfly stops it's digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
+* **Die** (Required) - This is how the butterfly stops its digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
 Actions for each of these steps is called an "instinct," and may require arguments. The first thing you do is build a simple array of instincts and pass that to the library. When a butterfly spawns, it runs through this logic to execute each instinct.
 
@@ -54,11 +54,13 @@ Some map generators have a second step where they remove any orphaned areas that
 
 # The API!
 
-The API is aimed to be super simple, in fact, currently it's only 3 functions. One for cleanup.
+The API is aimed to be super simple, in fact, currently its only 5 functions. One for cleanup.
 
 ```c
 int bf_spawn(struct bf_farm *farm, struct bf_instinct *instincts, size_t count, struct bf_config *config);
 void bf_commit(struct bf_farm *farm);
+double bf_random(struct bf_farm *farm);
+int bf_query(struct bf_farm *farm, int query);
 void bf_cleanup(struct bf_farm *farm);
 ```
 
