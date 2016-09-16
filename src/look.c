@@ -11,15 +11,18 @@ static void set_new_spot(
 {
 	struct butterfly *bf;
 
+	bf = farm->butterfly;
+
 	if (x < 0 || x >= farm->width || y < 0 || y >= farm->height) {
+		if (bf->config && bf->config->error_on_looking_outside_farm) {
+			farm->error = BF_ERROR_CANCEL;
+		}
 		return;
 	}
 
-	bf = farm->butterfly;
-
-	if (	bf->config && bf->config->cancel_on_looking_at_safe &&
+	if (	bf->config && bf->config->error_on_looking_at_safe &&
 		SPOT_AT(farm->spots, farm->width, x, y) > 0) {
-		farm->error = BF_CANCEL;
+		farm->error = BF_ERROR_CANCEL;
 	}
 
 	SPOT_AT(bf->new_spots, farm->width, x, y) = to;
@@ -54,49 +57,47 @@ void look(
 		break;
 
 	case BF_LOOK_PLUS_AREA:
-		set_new_spot(
-			farm,
-			bf->x - 1, bf->y,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x, bf->y - 1,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x, bf->y,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x, bf->y + 1,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x + 1, bf->y,
-			instinct->args[0]);
+		set_new_spot(farm, bf->x - 1, bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y + 1, instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y    , instinct->args[0]);
+		break;
+
+	case BF_LOOK_BIG_PLUS_AREA:
+		set_new_spot(farm, bf->x - 1, bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y + 1, instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y    , instinct->args[0]);
+
+		set_new_spot(farm, bf->x - 2, bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y - 2, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y + 2, instinct->args[0]);
+		set_new_spot(farm, bf->x + 2, bf->y    , instinct->args[0]);
 		break;
 
 	case BF_LOOK_X_AREA:
-		set_new_spot(
-			farm,
-			bf->x - 1, bf->y - 1,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x - 1, bf->y + 1,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x, bf->y,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x + 1, bf->y - 1,
-			instinct->args[0]);
-		set_new_spot(
-			farm,
-			bf->x + 1, bf->y + 1,
-			instinct->args[0]);
+		set_new_spot(farm, bf->x - 1, bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x - 1, bf->y + 1, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y + 1, instinct->args[0]);
+		break;
+
+	case BF_LOOK_BIG_X_AREA:
+		set_new_spot(farm, bf->x - 1, bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x - 1, bf->y + 1, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y - 1, instinct->args[0]);
+		set_new_spot(farm, bf->x + 1, bf->y + 1, instinct->args[0]);
+
+		set_new_spot(farm, bf->x - 2, bf->y - 2, instinct->args[0]);
+		set_new_spot(farm, bf->x - 2, bf->y + 2, instinct->args[0]);
+		set_new_spot(farm, bf->x    , bf->y    , instinct->args[0]);
+		set_new_spot(farm, bf->x + 2, bf->y - 2, instinct->args[0]);
+		set_new_spot(farm, bf->x + 2, bf->y + 2, instinct->args[0]);
 		break;
 
 	case BF_LOOK_RECT_AREA:

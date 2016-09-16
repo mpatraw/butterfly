@@ -71,7 +71,9 @@ enum {
 	BF_LOOK_EVERYWHERE,
 	BF_LOOK_1_AREA,
 	BF_LOOK_PLUS_AREA,
+	BF_LOOK_BIG_PLUS_AREA,
 	BF_LOOK_X_AREA,
+	BF_LOOK_BIG_X_AREA,
 	BF_LOOK_RECT_AREA,
 	BF_LOOK_CIRCLE_AREA,
 };
@@ -86,8 +88,8 @@ enum {
 
 enum {
 	BF_ERROR_NONE,
-	BF_ERROR_NO_MEM,
-	BF_CANCEL
+	BF_ERROR_CANCEL,
+	BF_ERROR_NO_MEM
 };
 
 struct bf_farm {
@@ -118,7 +120,13 @@ struct bf_config {
 	 * look at a safe location (to prevent overwrites)
 	 * default = false
 	 */
-	int cancel_on_looking_at_safe;
+	int error_on_looking_at_safe;
+
+	/* this will make the butterflies stop when they look
+	 * outside the map.
+	 * default = false
+	 */
+	int error_on_looking_outside_farm;
 
 	/* this cycles through all the looking instincts instead of
 	 * randomly selecting one.
