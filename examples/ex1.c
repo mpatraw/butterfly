@@ -16,14 +16,25 @@ int main(void)
 		.width = 80,
 		.height = 24
 	};
-	struct bf_instinct instincts[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_WEST_EDGE_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_EAST_EDGE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_LINE_TO_GOAL},
+	struct bf_instinct carve_start[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
 		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
+		{.event = BF_DIE, .action = BF_DIE_AFTER_N, {1}}
 	};
-	BF_SPAWN_ARR(&farm, instincts, NULL);
+	struct bf_instinct carve_instincts[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
+		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_LINE_TO_GOAL},
+		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
+		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+	};
+	BF_SPAWN_ARR(&farm, carve_start, NULL);
+	bf_commit(&farm);
+
+	for (int i = 0; i < 20; ++i) {
+		BF_SPAWN_ARR(&farm, carve_instincts, NULL);
+		bf_commit(&farm);
+	}
 
 	for (int y = 0; y < 24; ++y) {
 		for (int x = 0; x < 80; ++x) {
