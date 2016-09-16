@@ -6,7 +6,7 @@
 
 # Building
 
-**Butterfly** uses [tup] for it's build system and running `tup upd` should give you everything you need and build all of the examples.
+**Butterfly** uses [tup](http://gittup.org/tup/) for it's build system and running `tup upd` should give you everything you need and build all of the examples.
 
 # Algorithm
 
