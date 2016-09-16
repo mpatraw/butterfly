@@ -20,8 +20,8 @@ static void draw(int spots[24][80])
 
 int main(void)
 {
-	/* This can be any way you'd like. This is an 80x24 map filled with
-	 * walls (0).
+	/* This can be created any way you'd like. This is an 80x24 map filled
+	 * with walls (0).
 	 */
 	int spots[24][80] = {{WALL}};
 	/* The only three members that are required when using Butterfly. */
