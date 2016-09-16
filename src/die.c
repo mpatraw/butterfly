@@ -10,7 +10,7 @@ bool die(
 	struct point point;
 
 	switch (instinct->action) {
-	case BF_DIE_AT_SPOT:
+	case BF_DIE_AT_FIXED_SPOT:
 		return	bf->x == instinct->args[0] &&
 			bf->y == instinct->args[1];
 
@@ -33,7 +33,7 @@ bool die(
 		break;
 
 	case BF_DIE_ONE_IN:
-		return random_next_index(farm->rng_state, instinct->args[0]);
+		return !random_next_index(farm->rng_state, instinct->args[0]);
 
 	default:
 		break;

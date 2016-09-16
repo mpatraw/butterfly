@@ -250,11 +250,27 @@ enum {
 };
 
 enum {
-	BF_DIE_AT_SPOT,
+	/* The butterfly will die when landing on a specific coordinate.
+	 * args[0] = x
+	 * args[1] = y
+	 */
+	BF_DIE_AT_FIXED_SPOT,
+	/* The butterfly will die when it flutters to any safe spot.
+	 */
 	BF_DIE_AT_SAFE_SPOT,
+	/* The butterfly will die when it flutters to any dangerous spot.
+	 */
 	BF_DIE_AT_DANGEROUS_SPOT,
+	/* The butterfly will die when it flutters to the goal location. If there
+	 * is no goal, this will never kill the butterfly.
+	 */
 	BF_DIE_AT_GOAL,
+	/* The butterfly will die after N flutters and looks. Even if no looks or
+	 * flutters.
+	 */
 	BF_DIE_AFTER_N,
+	/* The butterfly has a one in N chance to die every flutter and look.
+	 */
 	BF_DIE_ONE_IN
 };
 
