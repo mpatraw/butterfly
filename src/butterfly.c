@@ -240,6 +240,7 @@ static void do_flutter_actions(
 	size_t count)
 {
 	struct bf_instinct flutters[count];
+	size_t r;
 	size_t nflutters;
 
 	copy_instincts_with_event(
@@ -251,8 +252,14 @@ static void do_flutter_actions(
 		return;
 	}
 
+	if (!bf->flutter) {
+		r = random_next_index(farm->rng_state, nflutters);
+		bf->flutter = &flutters[r];
+
+	}
+
 	/* only one flutter instinct allowed */
-	flutter(bf, farm, &flutters[0]);
+	flutter(bf, farm, bf->flutter);
 }
 
 static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)
@@ -288,7 +295,6 @@ int bf_spawn(
 	struct bf_config *config)
 {
 	struct butterfly *bf;
-	int log = 0;
 
 	if (ensure_farm_is_init(farm)) {
 		return -1;
@@ -297,6 +303,7 @@ int bf_spawn(
 	farm->error = BF_ERROR_NONE;
 	bf = farm->butterfly;
 	bf->config = config;
+	bf->flutter = NULL;
 
 	do_morph_actions(bf, farm, instincts, count);
 	if (farm->error) {
