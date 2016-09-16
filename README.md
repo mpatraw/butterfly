@@ -6,7 +6,7 @@
 
 # Building
 
-**Butterfly** uses [tup](http://gittup.org/tup/) for its build system and running `tup upd` should give you everything you need and build all of the examples.
+**Butterfly** uses [tup](http://gittup.org/tup/) for its build system and running `tup upd` should give you everything you need, including the examples.
 
 # Algorithm
 
@@ -22,7 +22,9 @@ The steps are:
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
 * **Die** (Required) - This is how the butterfly stops its digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
-Actions for each of these steps is called an "instinct," and may require arguments. The first thing you do is build a simple array of instincts and pass that to the library. When a butterfly spawns, it runs through this logic to execute each instinct.
+Controlling these steps is done with an array of "instincts," which you pass to a function. The ordering of the array doesn't matter, and you can have multiple entries for each step. In some cases all of them will used (Die), others, each time you call the function it will pick a random entry for each step.
+
+When a butterfly spawns, it runs through this logic to execute each instinct:
 
 * Pick random morph instinct.
 * Pick random goal instinct.
