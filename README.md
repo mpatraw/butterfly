@@ -29,9 +29,9 @@ Actions for each of these steps is called an "instinct," and may require argumen
 
 ## Safe & Dangerous (Walkable & Obstructed)
 
-In **Butterfly**, and any map generation algorithm, there has to be a way to determine if a tile is walkable or not. This is so we can guarantee every part of the map is connected to each other. **Butterfly** does this by just assuming any number 1 or over is walkable, and any number 0 or below is not. Obviously this doesn't work if you assume each tile is an array index, but you can always solve that by adding and subtracting when your walkable tiles start. Another option is to have a translation step.
+In **Butterfly**, and any map generation algorithm, there has to be a way to determine if a tile is walkable or not. This is so we can guarantee every part of the map is connected to each other. **Butterfly** does this by just assuming any number 1 or over is walkable, and any number 0 or below is not. Obviously this doesn't work if you assume each tile is an array index, but you can always solve that by adding and subtracting by the index when your walkable tiles start. Another option is to have a translation step.
 
-For simple examples, you will see this enum:
+For the examples provided, you will see this enum:
 
 ```
 enum {
@@ -60,7 +60,7 @@ void bf_cleanup(struct bf_farm *farm);
 
 # Simple Example (With Comments)
 
-This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/raw/master/examples/ex1.c) and play with the values.
+This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/blob/master/examples/ex1.c) and play with the values.
 
 ```c
 /* This can be created any way you'd like. This is an 80x24 map filled
