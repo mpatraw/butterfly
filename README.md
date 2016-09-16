@@ -2,17 +2,19 @@
 
 # Butterfly
 
-Butterfly is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Drunkard%27s_Walk) algorithm for generating 2D maps.
+**Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Drunkard%27s_Walk) algorithm for generating 2D maps.
 
 # Algorithm
 
-Butterfly breaks down the Drunkard's Walk algorithm into several steps. Each step can be controlled to produce varying dungeons.
+## Steps
+
+**Butterfly** breaks down the Drunkard's Walk algorithm into several steps. Each step can be controlled to produce varying dungeons.
 
 The steps are:
 
 * **Morph** (Optional) - This is where the butterfly starts it's "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
 * **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
-* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line. Only one flutter instinct per instinct list.
+* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line. Only *one* flutter instinct per instinct list.
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
 * **Die** (Required) - This is how the butterfly stops it's digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
@@ -21,9 +23,30 @@ Actions for each of these steps is called an "instinct," and may require argumen
 * Pick random morph instinct.
 * Pick random goal instinct.
 * Repeat
- * Check if any of the death instincts and break repeating if true.
+ * Check if any of the death instincts are true and break if so.
  * Use flutter instinct (you can only have one for each butterfly).
  * Pick random look instinct.
+
+## Safe & Dangerous (Walkable & Obstructed)
+
+In **Butterfly**, and any map generation algorithm, there has to be a way to determine if a tile is walkable or not. This is so we can guarantee every part of the map is connected to each other. **Butterfly** does this by just assuming any number 1 or over is walkable, and any number 0 or below is not. Obviously this doesn't work if you assume each tile is an array index, but you can always solve that by adding and subtracting when your walkable tiles start. Another option is to have a translation step.
+
+For simple examples, you will see this enum:
+
+```
+enum {
+	WALL,
+	FLOOR
+};
+```
+
+This works because `WALL` is 0, so **Butterfly** treats this as unwalkable, and `FLOOR` is 1, which is walkable. Think positivity is walkibility!
+
+## Ensuring Everything Connects
+
+Some map generators have a second step where they remove any orphaned areas that's smaller than the largest. **Butterfly** does not provide any of that post-processing functionality. Instead, you have make sure the logic of your instincts (instructions) are sound.
+
+ My recommended method is to always start or end on a safe spot.
 
 # The API!
 
@@ -36,6 +59,8 @@ void bf_cleanup(struct bf_farm *farm);
 ```
 
 # Simple Example (With Comments)
+
+This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/raw/master/examples/ex1.c) and play with the values.
 
 ```c
 /* This can be created any way you'd like. This is an 80x24 map filled
