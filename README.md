@@ -4,6 +4,10 @@
 
 **Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps.
 
+# Building
+
+**Butterfly** uses [tup] for it's build system and running `tup upd` should give you everything you need and build all of the examples.
+
 # Algorithm
 
 ## Steps
