@@ -10,11 +10,11 @@ Butterfly breaks down the Drunkard's Walk algorithm into several steps. Each ste
 
 The steps are:
 
-* Morph (Optional) - This is where the butterfly starts it's "walk."
-* Goal (Optional) - This just sets an optional goal location for the butterfly to aim towards.
+* Morph (Optional) - This is where the butterfly starts it's "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
+* Goal (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
 * Flutter (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line.
-* Look (Optional) - This is the way the butterfly "digs" out the dungeon.
-* Die (Required) - This is how the butterfly stops it's digging.
+* Look (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
+* Die (Required) - This is how the butterfly stops it's digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
 Writing actions for each of these steps is called an "instinct," and may require arguments. When a butterfly spawns, it runs through this logic:
 

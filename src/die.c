@@ -32,6 +32,9 @@ bool die(
 		bf->death_timer++;
 		break;
 
+	case BF_DIE_ONE_IN:
+		return random_next_range(instinct->args[0]) == 0;
+
 	default:
 		break;
 	}

@@ -26,6 +26,7 @@ int main(void)
 		.error_on_looking_at_safe = 1
 	};
 	struct bf_config tunnel_config = {
+		.error_on_looking_at_safe = 1,
 		.cycle_looking = 1
 	};
 	struct bf_farm farm = {
@@ -56,7 +57,7 @@ int main(void)
 	BF_SPAWN_ARR(&farm, room, NULL);
 	bf_commit(&farm);
 	printf("seed: %d\n", farm.seed);
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 100; ++i) {
 		if (BF_SPAWN_ARR(&farm, room, &room_config)) {
 			continue;
 		}

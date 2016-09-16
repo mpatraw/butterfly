@@ -210,7 +210,8 @@ static void do_look_actions(
 {
 	struct bf_instinct looks[count];
 	size_t nlooks;
-	static size_t r = 0;
+	size_t r;
+	static size_t c = 0;
 
 	copy_instincts_with_event(
 		looks, &nlooks,
@@ -222,8 +223,9 @@ static void do_look_actions(
 	}
 
 	if (bf->config && bf->config->cycle_looking) {
-		look(bf, farm, &looks[r]);
-		r = (r + 1) % nlooks;
+		c = c % nlooks;
+		look(bf, farm, &looks[c]);
+		c++;
 	} else {
 		r = random_next_index(farm->rng_state, nlooks);
 		look(bf, farm, &looks[r]);
