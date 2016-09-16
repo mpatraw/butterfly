@@ -64,7 +64,11 @@ int main(void)
 		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
 		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
 		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_BIG_PLUS_AREA, .args = {FLOOR}},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_LOOK, .action = BF_LOOK_DIAMOND_AREA, .args = {FLOOR, 3}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 	};
 	struct bf_instinct cave[] = {

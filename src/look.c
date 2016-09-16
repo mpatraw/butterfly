@@ -1,5 +1,6 @@
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "butterfly.h"
 #include "internal.h"
@@ -170,6 +171,23 @@ void look(
 		{
 			h = floor(sqrt(r * r - x * x));
 			for (y = -h; y <= h; ++y) {
+				set_new_spot(
+					farm,
+					bf->x + x, bf->y + y,
+					instinct->args[0]);
+			}
+		}
+		break;
+
+	case BF_LOOK_DIAMOND_AREA:
+		r = instinct->args[1];
+		for (x = -r; x <= r; ++x)
+		{
+			h = floor(sqrt(r * r - x * x));
+			for (y = -h; y <= h; ++y) {
+				if (abs(x) + abs(y) > r) {
+					continue;
+				}
 				set_new_spot(
 					farm,
 					bf->x + x, bf->y + y,
