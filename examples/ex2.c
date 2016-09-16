@@ -8,34 +8,44 @@ enum {
 	FLOOR
 };
 
-int main(void)
+static void draw(int spots[200][100])
 {
-	int spots[24][80] = {{WALL}};
-	struct bf_farm farm = {
-		.spots = (void *)spots,
-		.width = 80,
-		.height = 24
-	};
-	struct bf_instinct instincts[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
-	};
-	struct bf_instinct instincts2[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
-		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
-		{.event = BF_DIE, .action = BF_DIE_AFTER_N, .args = {1}},
-	};
-	BF_SPAWN_ARR(&farm, instincts, NULL);
-	BF_SPAWN_ARR(&farm, instincts2, NULL);
-
-	for (int y = 0; y < 24; ++y) {
-		for (int x = 0; x < 80; ++x) {
+	for (int y = 0; y < 200; ++y) {
+		for (int x = 0; x < 100; ++x) {
 			printf("%c", spots[y][x] ? '.' : '#');
 		}
 		printf("\n");
 	}
+}
+
+int main(void)
+{
+	int spots[200][100] = {{WALL}};
+	struct bf_farm farm = {
+		.spots = (void *)spots,
+		.width = 100,
+		.height = 200
+	};
+	struct bf_instinct carve_start[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.event = BF_DIE, .action = BF_DIE_AFTER_N, {1}}
+	};
+	struct bf_instinct carve[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
+		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {60}},
+		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
+		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+	};
+	BF_SPAWN_ARR(&farm, carve_start, NULL);
+	bf_commit(&farm);
+
+	for (int i = 0; i < 50; ++i) {
+		BF_SPAWN_ARR(&farm, carve, NULL);
+		bf_commit(&farm);
+	}
+
+	draw(spots);
 	return 0;
 }

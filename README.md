@@ -16,7 +16,7 @@ The steps are:
 * Look (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
 * Die (Required) - This is how the butterfly stops it's digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
-Actions for each of these steps is called an "instinct," and may require arguments. When a butterfly spawns, it runs through this logic:
+Actions for each of these steps is called an "instinct," and may require arguments. The first thing you do is build a simple array of instincts and pass that to the library. When a butterfly spawns, it runs through this logic to execute each instinct.
 
 * Pick random morph instinct.
 * Pick random goal instinct.
