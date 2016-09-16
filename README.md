@@ -78,10 +78,8 @@ struct bf_farm farm = {
  * flutter.
  *
  * Building the instincts (instructions).
- * - First is the morph instinct which is to start anywhere on the
- *   map.
- * - Look is how we dig, this says just at each step dig a 1 FLOOR
- *   tile.
+ * - First is the morph instinct. Here we start anywhere on the map.
+ * - Look is how we dig. Here it says at each step dig a 1 FLOOR tile.
  * - And finally how to die, which is right after fluttering and
  *   looking just once.
  */
@@ -94,12 +92,11 @@ struct bf_instinct carve_start[] = {
  * back to a safe spot.
  *
  * Building the instincts (instructions).
- * - First is the morph instinct which is to start anywhere on the
- *   map.
+ * - First is the morph instinct which is to start anywhere on the map.
  * - Next is the goal, which is any safe spot on the map that was
- *   commited.
+ *   commited. ENSURES CONNECTIONS.
  * - Flutter randomly with a 60% weighted walk to the goal.
- * - Look in a plus symbol. I find this digs really nice caves.
+ * - Look in a plus symbol. I find plus symbols dig really nice caves.
  * - And finally how to die, by arriving at any safe spot.
  */
 struct bf_instinct carve[] = {
