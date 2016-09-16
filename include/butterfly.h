@@ -275,12 +275,20 @@ enum {
 };
 
 enum {
+	/* Queries for the percentage (integer 0-100) of safe spots in the farm.
+	 * Useful for determining when to stop spawning butterflies.
+	 */
 	BF_QUERY_SAFE_PERCENTAGE,
+	/* Inverse of the safe percentage query.
+	 */
 	BF_QUERY_DANGEROUS_PERCENTAGE
 };
 
 enum {
 	BF_ERROR_NONE,
+	/* This occurs when the butterfly is cancelled, usually by setting
+	 * configuration options.
+	 */
 	BF_ERROR_CANCEL,
 	BF_ERROR_NO_MEM
 };
