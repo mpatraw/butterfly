@@ -123,12 +123,14 @@ static void carve_rest(struct bf_farm *farm)
 
 static void generate_dungeon(struct bf_farm *farm)
 {
+	int percentage;
 	int tries = WIDTH * HEIGHT;
 	memset(map, 0, sizeof(map));
 	carve_seed(farm);
-	while (bf_query(farm, BF_QUERY_SAFE_PERCENTAGE) < 65 && tries-- > 0) {
+	do {
 		carve_rest(farm);
-	}
+		bf_query(farm, BF_QUERY_SAFE_PERCENTAGE, &percentage);
+	} while (percentage < 65 && tries-- > 0);
 }
 
 static void generate_fov(TCOD_map_t fov, bool explored[HEIGHT][WIDTH])

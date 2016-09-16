@@ -357,16 +357,32 @@ double bf_random(struct bf_farm *farm)
 	return random_next_unit(farm->rng_state);
 }
 
-int bf_query(struct bf_farm *farm, int query)
+void bf_query(struct bf_farm *farm, int query, int *out)
 {
+	struct point p;
+
 	switch (query) {
 	case BF_QUERY_SAFE_PERCENTAGE:
-		return	((struct pointset *)farm->safe_spots)->length /
+		*out =	((struct pointset *)farm->safe_spots)->length /
 			((float)farm->width * (float)farm->height) * 100.f;
+		break;
 
 	case BF_QUERY_DANGEROUS_PERCENTAGE:
-		return	((struct pointset *)farm->dangerous_spots)->length /
+		*out =	((struct pointset *)farm->dangerous_spots)->length /
 			((float)farm->width * (float)farm->height) * 100.f;
+		break;
+
+	case BF_QUERY_RANDOM_SAFE_SPOT:
+		p = ps_rnd(farm->safe_spots, farm->rng_state);
+		out[0] = p.x;
+		out[1] = p.y;
+		break;
+
+	case BF_QUERY_RANDOM_DANGEROUS_SPOT:
+		p = ps_rnd(farm->dangerous_spots, farm->rng_state);
+		out[0] = p.x;
+		out[1] = p.y;
+		break;
 
 	default:
 		assert(!"invalid query");
