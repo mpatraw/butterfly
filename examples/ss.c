@@ -78,7 +78,7 @@ static void carve_randomly(struct bf_farm *farm)
 	static struct bf_instinct cave[] = {
 		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
 		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {51}},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_WEIGHTED_4, {51}},
 		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {DIRT_FLOOR}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT}
 	};
@@ -100,7 +100,7 @@ static void carve_room_and_corridor(struct bf_farm *farm)
 	static struct bf_instinct tunnel[] = {
 		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
 		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL_TO_GOAL},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL},
 		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 	};

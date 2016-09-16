@@ -115,6 +115,7 @@ struct butterfly {
 	int *new_spots;
 	int x;
 	int y;
+	bool has_goal;
 	int goal_x;
 	int goal_y;
 	int death_timer;

@@ -112,15 +112,8 @@ void flutter(
 	int *dpz, *dpnz;
 
 	switch (instinct->action) {
-	case BF_FLUTTER_RANDOMLY_4:
-		dir = dirs4[random_next_index(farm->rng_state, 4)];
-		move_by_caged(bf, farm, dir[0], dir[1]);
-		break;
-
-	case BF_FLUTTER_RANDOMLY_8:
-		dir = dirs8[random_next_index(farm->rng_state, 8)];
-		move_by_caged(bf, farm, dir[0], dir[1]);
-		break;
+	case BF_FLUTTER_STILL:
+		return;
 
 /* Okay, so here's the weighted walk algorith. Very sloppy, but I foresee it
  * changing a lot so I'm not too worried. The algorithm is hard coded and
@@ -193,7 +186,13 @@ void flutter(
  *        12.5%
  */
 
-	case BF_FLUTTER_RANDOMLY_TO_GOAL:
+	case BF_FLUTTER_WEIGHTED_4:
+		if (!bf->has_goal) {
+			dir = dirs4[random_next_index(farm->rng_state, 4)];
+			move_by_caged(bf, farm, dir[0], dir[1]);
+			return;
+		}
+
 		weight = instinct->args[0] / 100.f;
 		dx = bf->goal_x - bf->x;
 		dy = bf->goal_y - bf->y;
@@ -246,10 +245,16 @@ void flutter(
 		move_by_caged(bf, farm, dx, dy);
 		break;
 
-	case BF_FLUTTER_STRAIGHT_TO_GOAL:
+	case BF_FLUTTER_WEIGHTED_8:
+		dir = dirs8[random_next_index(farm->rng_state, 8)];
+		move_by_caged(bf, farm, dir[0], dir[1]);
 		break;
 
-	case BF_FLUTTER_TUNNEL_TO_GOAL: {
+	case BF_FLUTTER_TUNNEL: {
+		if (!bf->has_goal) {
+			return;
+		}
+
 		if (!bf->path_data) {
 			bf->path_data = malloc(sizeof(struct tunnel_path));
 			if (!bf->path_data) {
@@ -282,7 +287,11 @@ void flutter(
 		break;
 	}
 
-	case BF_FLUTTER_LINE_TO_GOAL: {
+	case BF_FLUTTER_LINE: {
+		if (!bf->has_goal) {
+			return;
+		}
+
 		if (!bf->path_data) {
 			bf->path_data = malloc(sizeof(struct line_path));
 			if (!bf->path_data) {

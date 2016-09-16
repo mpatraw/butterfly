@@ -34,7 +34,7 @@ int main(void)
 	struct bf_instinct carve[] = {
 		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
 		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {60}},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_WEIGHTED_4, {60}},
 		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 	};

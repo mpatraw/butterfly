@@ -10,6 +10,8 @@ void goal(
 	struct bf_instinct inst;
 	struct point point;
 
+	bf->has_goal = true;
+
 	switch (instinct->action) {
 	case BF_GOAL_FIXED_SPOT:
 		bf->goal_x = instinct->args[0];
@@ -110,6 +112,7 @@ void goal(
 		break;
 
 	default:
+		bf->has_goal = false;
 		break;
 	}
 }

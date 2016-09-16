@@ -104,9 +104,7 @@ static void reset_butterfly(
 	}
 	free(bf->path_data);
 	bf->path_data = NULL;
-	/* this means there is no goal spot */
-	bf->goal_x = -1;
-	bf->goal_y = -1;
+	bf->has_goal = false;
 	bf->death_timer = 0;
 }
 
