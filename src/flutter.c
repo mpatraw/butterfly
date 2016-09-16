@@ -243,8 +243,7 @@ void flutter(
 			}
 		}
 
-		bf->x += dx;
-		bf->y += dy;
+		move_by_caged(bf, farm, dx, dy);
 		break;
 
 	case BF_FLUTTER_STRAIGHT_TO_GOAL:

@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -287,6 +288,7 @@ int bf_spawn(
 	struct bf_config *config)
 {
 	struct butterfly *bf;
+	int log = 0;
 
 	if (ensure_farm_is_init(farm)) {
 		return -1;
@@ -336,7 +338,7 @@ int bf_spawn(
 
 error:
 	reset_butterfly(bf, farm, true);
-	return -1;
+	return -farm->error;
 }
 
 void bf_commit(struct bf_farm *farm)
@@ -348,6 +350,19 @@ void bf_commit(struct bf_farm *farm)
 double bf_random(struct bf_farm *farm)
 {
 	return random_next_unit(farm->rng_state);
+}
+
+int bf_query(struct bf_farm *farm, int query)
+{
+	switch (query) {
+	case BF_QUERY_SAFE_PERCENTAGE:
+		return	((struct pointset *)farm->safe_spots)->length /
+			((float)farm->width * (float)farm->height) * 100.f;
+
+	default:
+		assert(!"invalid query");
+		break;
+	}
 }
 
 void bf_cleanup(struct bf_farm *farm)

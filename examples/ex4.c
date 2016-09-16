@@ -11,7 +11,8 @@ enum {
 	WALL,
 	CAVE_WALL,
 	FLOOR,
-	CAVE_FLOOR
+	CAVE_FLOOR,
+	RIVER
 };
 
 struct tile_def {
@@ -24,6 +25,7 @@ static struct tile_def tile_defs[] = {
 	{'#', "darkest amber"},
 	{'.', "grey"},
 	{'.', "amber"},
+	{'~', "darker blue"}
 };
 
 int main(void)
@@ -78,6 +80,13 @@ int main(void)
 		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {CAVE_FLOOR}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 	};
+	struct bf_instinct river[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_EDGE_SPOT},
+		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_EDGE_SPOT},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {100}},
+		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {RIVER}},
+		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
+	};
 
 	BF_SPAWN_ARR(&farm, room, NULL);
 	bf_commit(&farm);
@@ -93,6 +102,8 @@ int main(void)
 		}
 		bf_commit(&farm);
 	}
+	BF_SPAWN_ARR(&farm, river, NULL);
+	bf_commit(&farm);
 
 	terminal_open();
 	terminal_set("window: size=120x40");

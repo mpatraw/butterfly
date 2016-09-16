@@ -8,3 +8,4 @@ include_rules
 : examples/ex2.o lib/libbutterfly.a |> !exe |> examples/ex2
 : examples/ex3.o lib/libbutterfly.a |> !exe |> examples/ex3
 : examples/ex4.o lib/libbutterfly.a |> !bltexe |> examples/ex4
+: examples/ss.o lib/libbutterfly.a |> !tcodexe |> examples/ss

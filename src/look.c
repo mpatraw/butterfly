@@ -81,7 +81,9 @@ void look(
 	struct bf_farm *farm,
 	struct bf_instinct *instinct)
 {
+	struct bf_instinct temp;
 	int x, y;
+	int min, max;
 	int w, h;
 	int r;
 
@@ -151,12 +153,8 @@ void look(
 	case BF_LOOK_RECT_AREA:
 		w = instinct->args[1];
 		h = instinct->args[2];
-		for (	x = bf->x - w;
-			x <= bf->x + w;
-			++x) {
-			for (	y = bf->y - h;
-				y <= bf->y + h;
-				++y) {
+		for (x = bf->x - w; x <= bf->x + w; ++x) {
+			for (y = bf->y - h; y <= bf->y + h; ++y) {
 				set_new_spot(
 					farm,
 					x, y,
@@ -165,10 +163,22 @@ void look(
 		}
 		break;
 
+	case BF_LOOK_SHRINKING_RECT_AREA:
+		min = instinct->args[1];
+		max = instinct->args[2];
+		do {
+			farm->error = BF_ERROR_NONE;
+			temp = (struct bf_instinct){
+				.action = BF_LOOK_RECT_AREA,
+				.args = {instinct->args[0], max / 2, max / 2}
+			};
+			look(bf, farm, &temp);
+		} while (farm->error && --max >= min);
+		break;
+
 	case BF_LOOK_CIRCLE_AREA:
 		r = instinct->args[1];
-		for (x = -r; x <= r; ++x)
-		{
+		for (x = -r; x <= r; ++x) {
 			h = floor(sqrt(r * r - x * x));
 			for (y = -h; y <= h; ++y) {
 				set_new_spot(
@@ -179,10 +189,22 @@ void look(
 		}
 		break;
 
+	case BF_LOOK_SHRINKING_CIRCLE_AREA:
+		min = instinct->args[1];
+		max = instinct->args[2];
+		do {
+			farm->error = BF_ERROR_NONE;
+			temp = (struct bf_instinct){
+				.action = BF_LOOK_CIRCLE_AREA,
+				.args = {instinct->args[0], max / 2}
+			};
+			look(bf, farm, &temp);
+		} while (farm->error && --max >= min);
+		break;
+
 	case BF_LOOK_DIAMOND_AREA:
 		r = instinct->args[1];
-		for (x = -r; x <= r; ++x)
-		{
+		for (x = -r; x <= r; ++x) {
 			h = floor(sqrt(r * r - x * x));
 			for (y = -h; y <= h; ++y) {
 				if (abs(x) + abs(y) > r) {
@@ -194,6 +216,19 @@ void look(
 					instinct->args[0]);
 			}
 		}
+		break;
+
+	case BF_LOOK_SHRINKING_DIAMOND_AREA:
+		min = instinct->args[1];
+		max = instinct->args[2];
+		do {
+			farm->error = BF_ERROR_NONE;
+			temp = (struct bf_instinct){
+				.action = BF_LOOK_DIAMOND_AREA,
+				.args = {instinct->args[0], max / 2}
+			};
+			look(bf, farm, &temp);
+		} while (farm->error && --max >= min);
 		break;
 
 	default:

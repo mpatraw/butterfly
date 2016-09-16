@@ -30,5 +30,6 @@ endif
 LDFLAGS += -Lvendor
 !cc = |> ^ cc %f -o %o^ gcc $(CFLAGS) -c %f -o %o |>
 !bltexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -lBearLibTerminal %f -o %o |>
+!tcodexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -ltcod %f -o %o |>
 !exe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) %f -o %o |>
 !ar = |> ar rcs %o %f |>

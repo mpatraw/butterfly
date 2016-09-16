@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 enum {
-	BF_NARGS = 3
+	BF_NARGS = 5
 };
 
 /* life events */
@@ -75,8 +75,11 @@ enum {
 	BF_LOOK_X_AREA,
 	BF_LOOK_BIG_X_AREA,
 	BF_LOOK_RECT_AREA,
+	BF_LOOK_SHRINKING_RECT_AREA,
 	BF_LOOK_CIRCLE_AREA,
+	BF_LOOK_SHRINKING_CIRCLE_AREA,
 	BF_LOOK_DIAMOND_AREA,
+	BF_LOOK_SHRINKING_DIAMOND_AREA,
 };
 
 enum {
@@ -86,6 +89,10 @@ enum {
 	BF_DIE_AT_GOAL,
 	BF_DIE_AFTER_N,
 	BF_DIE_ONE_IN
+};
+
+enum {
+	BF_QUERY_SAFE_PERCENTAGE,
 };
 
 enum {
@@ -106,15 +113,14 @@ struct bf_farm {
 	 */
 	int last_dangerous;
 
-	/* 0 if no error */
-	int error;
-
 	/* internal */
 	int is_init;
 	void *rng_state;
 	void *safe_spots;
 	void *dangerous_spots;
 	void *butterfly;
+	/* 0 if no error */
+	int error;
 };
 
 struct bf_instinct {
@@ -168,6 +174,7 @@ int bf_spawn(
 	struct bf_config *config);
 void bf_commit(struct bf_farm *farm);
 double bf_random(struct bf_farm *farm);
+int bf_query(struct bf_farm *farm, int query);
 void bf_cleanup(struct bf_farm *farm);
 
 #ifdef __cplusplus
