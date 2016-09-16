@@ -109,7 +109,9 @@ struct bf_instinct carve[] = {
 	{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
 	{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 };
-/* Run the instincts on our map. */
+/* Run the instincts to produce our first safe area so the other butterflies
+ * can find it! This only needs to be run once.
+ */
 BF_SPAWN_ARR(&farm, carve_start, NULL);
 /* Commit these changes. */
 bf_commit(&farm);
