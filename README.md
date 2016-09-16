@@ -2,7 +2,7 @@
 
 # Butterfly
 
-**Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Drunkard%27s_Walk) algorithm for generating 2D maps.
+**Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps.
 
 # Algorithm
 
