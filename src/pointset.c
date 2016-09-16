@@ -60,8 +60,12 @@ void ps_uninit(struct pointset *ps)
 
 int ps_has(struct pointset *ps, struct point p)
 {
-	if (INDEX2(ps->map, p.x, p.y, ps->width))
+	if (p.x < 0 || p.y < 0 || p.x >= ps->width || p.y >= ps->height) {
+		return 0;
+	}
+	if (INDEX2(ps->map, p.x, p.y, ps->width)) {
 		return 1;
+	}
 	return 0;
 }
 

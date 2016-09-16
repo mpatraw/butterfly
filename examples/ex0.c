@@ -37,7 +37,7 @@ int main(void)
 	 * - Flutter is how it moves somewhere, in this case, just a line.
 	 * - Look is how we dig, this says just at each step dig a 1 FLOOR
 	 *   tile.
-	 * - And finally how to die, buy arriving at our goal (flutter
+	 * - And finally how to die, by arriving at our goal (flutter
 	 *   guarantees this).
 	 */
 	struct bf_instinct carve[] = {
