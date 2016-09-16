@@ -1,6 +1,7 @@
 .tup/
 *.o
 lib/libbutterfly.a
+examples/ex0
 examples/ex1
 examples/ex2
 examples/ex3
