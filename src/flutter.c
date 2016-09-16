@@ -12,7 +12,7 @@ static void move_by_caged(
 {
 	int nx = bf->x + dx;
 	int ny = bf->y + dy;
-	if (nx < 0 || nx >= farm->width || ny < 0 || ny >= farm->height) {
+	if (!IN_BOUNDS(farm, nx, ny)) {
 		return;
 	}
 	bf->x = nx;

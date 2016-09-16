@@ -9,11 +9,28 @@ static void set_new_spot(
 	int x, int y,
 	int to)
 {
+	static int dir8[8][2] = {
+		{-1, -1},
+		{-1,  0},
+		{-1,  1},
+		{ 0, -1},
+		{ 0,  1},
+		{ 1, -1},
+		{ 1,  0},
+		{ 1,  1},
+	};
+	static int dir4[4][2] = {
+		{-1,  0},
+		{ 0, -1},
+		{ 0,  1},
+		{ 0,  1}
+	};
 	struct butterfly *bf;
+	int d, dx, dy, s;
 
 	bf = farm->butterfly;
 
-	if (x < 0 || x >= farm->width || y < 0 || y >= farm->height) {
+	if (!IN_BOUNDS(farm, x, y)) {
 		if (bf->config && bf->config->error_on_looking_outside_farm) {
 			farm->error = BF_ERROR_CANCEL;
 		}
@@ -21,11 +38,41 @@ static void set_new_spot(
 	}
 
 	if (	bf->config && bf->config->error_on_looking_at_safe &&
-		SPOT_AT(farm->spots, farm->width, x, y) > 0) {
+		IS_SAFE_AT(farm, x, y)) {
 		farm->error = BF_ERROR_CANCEL;
 	}
 
 	SPOT_AT(bf->new_spots, farm->width, x, y) = to;
+
+	if (bf->config && bf->config->enable_neighbor_look_8) {
+		for (d = 0; d < 8; ++d) {
+			dx = x + dir8[d][0];
+			dy = y + dir8[d][1];
+			if (!IN_BOUNDS(farm, dx, dy)) {
+				continue;
+			}
+			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			if (!IS_SAFE(farm, s)) {
+				SPOT_AT(bf->new_spots, farm->width, dx, dy) =
+					bf->config->neighbor_look_8;
+			}
+		}
+	}
+
+	if (bf->config && bf->config->enable_neighbor_look_4) {
+		for (d = 0; d < 4; ++d) {
+			dx = x + dir4[d][0];
+			dy = y + dir4[d][1];
+			if (!IN_BOUNDS(farm, dx, dy)) {
+				continue;
+			}
+			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			if (!IS_SAFE(farm, s)) {
+				SPOT_AT(bf->new_spots, farm->width, dx, dy) =
+					bf->config->neighbor_look_4;
+			}
+		}
+	}
 }
 
 void look(

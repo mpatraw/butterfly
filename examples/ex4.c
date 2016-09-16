@@ -4,9 +4,14 @@
 #include <BearLibTerminal.h>
 #include <butterfly.h>
 
+#define WIDTH 120
+#define HEIGHT 40
+
 enum {
 	WALL,
-	FLOOR
+	CAVE_WALL,
+	FLOOR,
+	CAVE_FLOOR
 };
 
 struct tile_def {
@@ -16,24 +21,33 @@ struct tile_def {
 
 static struct tile_def tile_defs[] = {
 	{'#', "grey"},
+	{'#', "darkest amber"},
 	{'.', "grey"},
+	{'.', "amber"},
 };
 
 int main(void)
 {
-	int spots[25][80] = {{WALL}};
+	int spots[HEIGHT][WIDTH] = {{WALL}};
 	struct bf_config room_config = {
-		.error_on_looking_at_safe = 1
+		.error_on_looking_at_safe = 1,
+		.error_on_looking_outside_farm = 1
 	};
 	struct bf_config tunnel_config = {
 		.error_on_looking_at_safe = 1,
+		.error_on_looking_outside_farm = 1,
 		.cycle_looking = 1
+	};
+	struct bf_config cave_config = {
+		.enable_neighbor_look_8 = 1,
+		.neighbor_look_8 = CAVE_WALL
 	};
 	struct bf_farm farm = {
 		.spots = (void *)spots,
-		.width = 80,
-		.height = 25,
-		.seed = 0
+		.width = WIDTH,
+		.height = HEIGHT,
+		.seed = 0,
+		.last_dangerous = CAVE_WALL
 	};
 	struct bf_instinct room[] = {
 		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
@@ -53,23 +67,35 @@ int main(void)
 		{.event = BF_LOOK, .action = BF_LOOK_BIG_PLUS_AREA, .args = {FLOOR}},
 		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
 	};
+	struct bf_instinct cave[] = {
+		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
+		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {60}},
+		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {CAVE_FLOOR}},
+		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+	};
 
 	BF_SPAWN_ARR(&farm, room, NULL);
 	bf_commit(&farm);
 	printf("seed: %d\n", farm.seed);
-	for (int i = 0; i < 100; ++i) {
-		if (BF_SPAWN_ARR(&farm, room, &room_config)) {
-			continue;
+	for (int i = 0; i < 120; ++i) {
+		if (bf_random(&farm) < 0.90) {
+			if (BF_SPAWN_ARR(&farm, room, &room_config)) {
+				continue;
+			}
+			BF_SPAWN_ARR(&farm, tunnel, &tunnel_config);
+		} else {
+			BF_SPAWN_ARR(&farm, cave, &cave_config);
 		}
-		BF_SPAWN_ARR(&farm, tunnel, &tunnel_config);
 		bf_commit(&farm);
 	}
 
 	terminal_open();
+	terminal_set("window: size=120x40");
 
 
-	for (int y = 0; y < 25; ++y) {
-		for (int x = 0; x < 80; ++x) {
+	for (int y = 0; y < HEIGHT; ++y) {
+		for (int x = 0; x < WIDTH; ++x) {
 			struct tile_def t = tile_defs[spots[y][x]];
 			terminal_color(color_from_name(t.fg));
 			terminal_put(x, y, t.glyph);

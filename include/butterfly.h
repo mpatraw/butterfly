@@ -99,6 +99,12 @@ struct bf_farm {
 	int height;
 	int seed;
 
+	/* the last dangerous numbers. any number higher than this
+	 * is considered "safe.""
+	 * default 0
+	 */
+	int last_dangerous;
+
 	/* 0 if no error */
 	int error;
 
@@ -134,6 +140,20 @@ struct bf_config {
 	 * default = false
 	 */
 	int cycle_looking;
+
+	/* this makes it so any tile touched, all the neighbors are imbued with
+	 * this spot. this will only overwrite dangerous spots.
+	 * **only works for dangerous spots**
+	 */
+	int enable_neighbor_look_8;
+	int neighbor_look_8;
+
+	/* this makes it so any tile touched, all the neighbors are imbued with
+	 * this spot.  this will only overwrite dangerous spots.
+	 * **only works for dangerous spots**
+	 */
+	int enable_neighbor_look_4;
+	int neighbor_look_4;
 };
 
 #ifdef __cplusplus
@@ -146,6 +166,7 @@ int bf_spawn(
 	size_t count,
 	struct bf_config *config);
 void bf_commit(struct bf_farm *farm);
+double bf_random(struct bf_farm *farm);
 void bf_cleanup(struct bf_farm *farm);
 
 #ifdef __cplusplus

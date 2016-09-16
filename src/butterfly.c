@@ -46,7 +46,7 @@ static int ensure_farm_is_init(struct bf_farm *farm)
 	for (x = 0; x < farm->width; ++x) {
 		for (y = 0; y < farm->height; ++y) {
 			point = (struct point){x, y};
-			if (SPOT_AT(farm->spots, farm->width, x, y) > 0) {
+			if (IS_SAFE_AT(farm, x, y)) {
 				ps_add(farm->safe_spots, point);
 			} else {
 				ps_add(farm->dangerous_spots, point);
@@ -266,11 +266,11 @@ static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)
 			s = SPOT_AT(farm->spots, farm->width, x, y);
 			if (ns == s) {
 				continue;
-			} else if (ns > 0 && s <= 0) {
+			} else if (IS_SAFE(farm, ns) && !IS_SAFE(farm, s)) {
 				point = (struct point){x, y};
 				ps_rem(farm->dangerous_spots, point);
 				ps_add(farm->safe_spots, point);
-			} else if (ns <= 0 && s > 0) {
+			} else if (!IS_SAFE(farm, ns) && IS_SAFE(farm, s)) {
 				point = (struct point){x, y};
 				ps_rem(farm->safe_spots, point);
 				ps_add(farm->dangerous_spots, point);
@@ -343,6 +343,11 @@ void bf_commit(struct bf_farm *farm)
 {
 	struct butterfly *bf = farm->butterfly;
 	commit_new_spots(bf, farm);
+}
+
+double bf_random(struct bf_farm *farm)
+{
+	return random_next_unit(farm->rng_state);
 }
 
 void bf_cleanup(struct bf_farm *farm)

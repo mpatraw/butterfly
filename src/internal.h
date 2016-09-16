@@ -103,7 +103,11 @@ void ps_clr(struct pointset *ps);
  * butterfly
  */
 
+#define IN_BOUNDS(f, x, y) \
+	((x) >= 0 && (y) >= 0 && x < (f)->width && y < (f)->height)
 #define SPOT_AT(arr, w, x, y) ((arr)[(y) * (w) + (x)])
+#define IS_SAFE(f, t) ((t) > (f)->last_dangerous)
+#define IS_SAFE_AT(f, x, y) IS_SAFE(f, SPOT_AT((f)->spots, (f)->width, x, y))
 
 struct butterfly {
 	struct bf_config *config;
