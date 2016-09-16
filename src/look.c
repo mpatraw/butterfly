@@ -88,6 +88,9 @@ void look(
 	int r;
 
 	switch (instinct->action) {
+	case BF_LOOK_NOWHERE:
+		break;
+
 	case BF_LOOK_EVERYWHERE:
 		for (x = 0; x < farm->width; ++x) {
 			for (y = 0; y < farm->height; ++y) {

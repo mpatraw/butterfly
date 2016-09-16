@@ -366,6 +366,10 @@ int bf_query(struct bf_farm *farm, int query)
 		return	((struct pointset *)farm->safe_spots)->length /
 			((float)farm->width * (float)farm->height) * 100.f;
 
+	case BF_QUERY_DANGEROUS_PERCENTAGE:
+		return	((struct pointset *)farm->dangerous_spots)->length /
+			((float)farm->width * (float)farm->height) * 100.f;
+
 	default:
 		assert(!"invalid query");
 		break;

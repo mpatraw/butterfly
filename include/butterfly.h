@@ -68,6 +68,7 @@ enum {
 };
 
 enum {
+	BF_LOOK_NOWHERE,
 	BF_LOOK_EVERYWHERE,
 	BF_LOOK_1_AREA,
 	BF_LOOK_PLUS_AREA,
@@ -93,6 +94,7 @@ enum {
 
 enum {
 	BF_QUERY_SAFE_PERCENTAGE,
+	BF_QUERY_DANGEROUS_PERCENTAGE
 };
 
 enum {

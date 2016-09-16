@@ -18,7 +18,7 @@ The steps are:
 
 * **Morph** (Optional) - This is where the butterfly starts its "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
 * **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
-* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line. Only *one* flutter instinct per instinct list.
+* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line.
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
 * **Die** (Required) - This is how the butterfly stops its digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
@@ -28,7 +28,7 @@ Actions for each of these steps is called an "instinct," and may require argumen
 * Pick random goal instinct.
 * Repeat
  * Check if any of the death instincts are true and break if so.
- * Use flutter instinct (you can only have one for each butterfly).
+ * Pick random flutter instinct and use only that one
  * Pick random look instinct.
 
 ## Safe & Dangerous (Walkable & Obstructed)
@@ -50,7 +50,7 @@ This works because `WALL` is 0, so **Butterfly** treats this as unwalkable, and 
 
 Some map generators have a second step where they remove any orphaned areas that's smaller than the largest. **Butterfly** does not provide any of that post-processing functionality. Instead, you have make sure the logic of your instincts (instructions) are sound.
 
- My recommended method is to always start or end on a safe spot.
+ My recommendation is to always start or end on a safe spot.
 
 # The API!
 
@@ -66,7 +66,7 @@ void bf_cleanup(struct bf_farm *farm);
 
 # Simple Example (With Comments)
 
-This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/blob/master/examples/ex1.c) and play with the values.
+This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/blob/master/examples/ex1.c). Clone the repository and play with the values.
 
 ```c
 /* This can be created any way you'd like. This is an 80x24 map filled
