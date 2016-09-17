@@ -50,7 +50,7 @@ This works because `WALL` is 0, so **Butterfly** treats this as unwalkable, and 
 
 ## Ensuring Everything Connects
 
-Some map generators have a second step where they remove any orphaned areas that's smaller than the largest. **Butterfly** does not provide any of that post-processing functionality. Instead, you have make sure the logic of your instincts (instructions) are sound.
+Some map generators have a second step where they remove any orphaned areas that are smaller than the largest. **Butterfly** does not provide any of that post-processing functionality. Instead, you have make sure the logic of your instincts (instructions) are sound.
 
  My recommendation is to always start or end on a safe spot.
 
