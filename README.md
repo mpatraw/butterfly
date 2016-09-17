@@ -22,7 +22,7 @@ The steps are:
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
 * **Die** (Required) - This is how the butterfly stops its digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
-Controlling these steps is done with an array of "instincts," which you pass to a function. The ordering of the array doesn't matter, and you can have multiple entries for each step. In some cases all of them will used (Die), others, each time you call the function it will pick a random entry for each step.
+Controlling these steps is done with an array of "instincts," which you pass to a function. The ordering of the array doesn't matter, and you can have multiple entries for each step. In some cases all of them will be used (Die), others, each time you call the function it will pick a random entry for each step.
 
 When a butterfly spawns, it runs through this logic to execute each instinct:
 
