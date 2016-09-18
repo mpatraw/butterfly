@@ -17,7 +17,6 @@ endif
 CFLAGS += -std=c99
 CFLAGS += -fPIC
 CFLAGS += -Iinclude
-CFLAGS += -Ivendor
 ifeq (@(BUILD),DEBUG)
 	CFLAGS += -Wall
 	CFLAGS += -Wextra
@@ -28,7 +27,6 @@ ifeq (@(BUILD),RELEASE)
 	CFLAGS += -O2
 	CFLAGS += -s
 endif
-LDFLAGS += -Lvendor
 !cc = |> ^ cc %f -o %o^ gcc $(CFLAGS) -c %f -o %o |>
 !bltexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -lBearLibTerminal %f -o %o |>
 !tcodexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -ltcod %f -o %o |>

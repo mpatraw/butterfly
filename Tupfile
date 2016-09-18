@@ -1,12 +1,18 @@
 
 include_rules
 : foreach src/*.c |> !cc |> src/%B.o
-: foreach examples/*.c |> !cc |> examples/%B.o
+: foreach examples/plain/*.c |> !cc |> examples/plain/%B.o
 : src/*.o |> !ar |> lib/libbutterfly.a
 : src/*.o |> !shared |> lib/libbutterfly.so
-: examples/ex0.o lib/libbutterfly.a |> !exe |> examples/ex0
-: examples/ex1.o lib/libbutterfly.a |> !exe |> examples/ex1
-: examples/ex2.o lib/libbutterfly.a |> !exe |> examples/ex2
-: examples/ex3.o lib/libbutterfly.a |> !exe |> examples/ex3
-: examples/ex4.o lib/libbutterfly.a |> !bltexe |> examples/ex4
-: examples/ss.o lib/libbutterfly.a |> !tcodexe |> examples/ss
+: examples/plain/ex0.o lib/libbutterfly.a |> !exe |> examples/plain/ex0
+: examples/plain/ex1.o lib/libbutterfly.a |> !exe |> examples/plain/ex1
+: examples/plain/ex2.o lib/libbutterfly.a |> !exe |> examples/plain/ex2
+: examples/plain/ex3.o lib/libbutterfly.a |> !exe |> examples/plain/ex3
+ifeq (@(BUILD_BEARLIBTERMINAL_EXAMPLES),TRUE)
+: foreach examples/blt/*.c |> !cc |> examples/blt/%B.o
+: examples/blt/ex4.o lib/libbutterfly.a |> !bltexe |> examples/blt/ex4
+endif
+ifeq (@(BUILD_LIBTCOD_EXAMPLES),TRUE)
+: foreach examples/tcod/*.c |> !cc |> examples/tcod/%B.o
+: examples/tcod/ss.o lib/libbutterfly.a |> !tcodexe |> examples/tcod/ss
+endif

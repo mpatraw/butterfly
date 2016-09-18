@@ -9,7 +9,9 @@ FLOOR = 1
 
 room = bf.Butterfly(*[
     [bf.MORPH_AT_RANDOM_SPOT],
-    [bf.LOOK_RECT_AREA, [FLOOR, 3, 3]],
+    [bf.LOOK_RECT_AREA, [FLOOR, 3, 1]],
+    [bf.LOOK_RECT_AREA, [FLOOR, 5, 3]],
+    [bf.LOOK_RECT_AREA, [FLOOR, 6, 4]],
     [bf.DIE_AFTER_N, [1]]
 ], error_on_looking_at_safe_neighbor_8=True,
    error_on_looking_outside_farm=True)
@@ -23,7 +25,7 @@ tunnel = bf.Butterfly(*[
 ])
 
 f = bf.Farm(80, 24)
-f.spawn(bf.random_nxm(FLOOR, 3, 3), commit=True)
+f.spawn(bf.random_1x1(FLOOR), commit=True)
 f.spawn([room, tunnel], 50, commit=True)
 
 print(f.seed())
