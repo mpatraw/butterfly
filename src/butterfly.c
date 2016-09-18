@@ -365,6 +365,7 @@ double bf_random(struct bf_farm *farm)
 
 void bf_query(struct bf_farm *farm, int query, int *out)
 {
+	struct butterfly *bf;
 	struct point p;
 
 	switch (query) {
@@ -388,6 +389,18 @@ void bf_query(struct bf_farm *farm, int query, int *out)
 		p = ps_rnd(farm->dangerous_spots, farm->rng_state);
 		out[0] = p.x;
 		out[1] = p.y;
+		break;
+
+	case BF_QUERY_LAST_DEATH_SPOT:
+		bf = farm->butterfly;
+		out[0] = bf->last_death_x;
+		out[1] = bf->last_death_y;
+		break;
+
+	case BF_QUERY_LAST_MORPH_SPOT:
+		bf = farm->butterfly;
+		out[0] = bf->last_morph_x;
+		out[1] = bf->last_morph_y;
 		break;
 
 	default:

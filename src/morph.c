@@ -14,13 +14,13 @@ void morph(
 
 	switch (instinct->action) {
 	case BF_MORPH_AT_LAST_DEATH_SPOT:
-		bf->x = bf->last_death_x;
-		bf->y = bf->last_death_y;
+		bf->x = bf->last_death_x + instinct->args[0];
+		bf->y = bf->last_death_y + instinct->args[0];
 		break;
 
 	case BF_MORPH_AT_LAST_MORPH_SPOT:
-		bf->x = bf->last_morph_x;
-		bf->y = bf->last_morph_y;
+		bf->x = bf->last_morph_x + instinct->args[0];
+		bf->y = bf->last_morph_y + instinct->args[0];
 		break;
 
 	case BF_MORPH_AT_FIXED_SPOT:

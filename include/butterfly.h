@@ -11,11 +11,15 @@ enum {
 enum {
 	BF_MORPH_START,
 	/* Morph where the last butterfly died.
+	 * args[0] = x location (optional)
+	 * args[1] = y location (optional)
 	 *
 	 * Default if a morph instinct is not specified.
 	 */
 	BF_MORPH_AT_LAST_DEATH_SPOT = BF_MORPH_START,
 	/* Morph where the last butterfly morphed.
+	 * args[0] = x location (optional)
+	 * args[1] = y location (optional)
 	 */
 	BF_MORPH_AT_LAST_MORPH_SPOT,
 	/* Morph at a fixed location.
@@ -296,6 +300,8 @@ enum {
 	 */
 	BF_QUERY_RANDOM_DANGEROUS_SPOT,
 
+	BF_QUERY_LAST_DEATH_SPOT,
+	BF_QUERY_LAST_MORPH_SPOT
 };
 
 enum {
