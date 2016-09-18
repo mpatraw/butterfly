@@ -194,7 +194,7 @@ Just kidding. Here is what it can actually produce.
 
 # An Even Simpler Example (In Python)
 
-Okay, so the logic isn't as simple, but its Python so...
+Okay, so the logic isn't as simple, but it's Python so...
 
 ```py
 import butterfly as bf
