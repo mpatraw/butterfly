@@ -11,7 +11,7 @@ instincts = [
 ]
 
 f = bf.Farm(80, 24)
-bf = bf.Butterfly(*instincts, error_on_looking_at_safe=True)
+bf = bf.Butterfly(*instincts, error_on_looking_at_safe_neighbor_4=True)
 f.spawn(bf, 20, commit=True)
 
 for y in xrange(24):

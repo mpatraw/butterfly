@@ -50,7 +50,7 @@ static void set_new_spot(
 			if (!IN_BOUNDS(farm, dx, dy)) {
 				continue;
 			}
-			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			s = SPOT_AT(farm->spots, farm->width, dx, dy);
 			if (IS_SAFE(farm, s)) {
 				farm->error = BF_ERROR_CANCEL;
 			}
@@ -64,7 +64,7 @@ static void set_new_spot(
 			if (!IN_BOUNDS(farm, dx, dy)) {
 				continue;
 			}
-			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			s = SPOT_AT(farm->spots, farm->width, dx, dy);
 			if (IS_SAFE(farm, s)) {
 				farm->error = BF_ERROR_CANCEL;
 			}
