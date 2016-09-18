@@ -13,8 +13,8 @@ room = bf.Butterfly(*[
     [bf.LOOK_RECT_AREA, [FLOOR, 5, 3]],
     [bf.LOOK_RECT_AREA, [FLOOR, 6, 4]],
     [bf.DIE_AFTER_N, [1]]
-], error_on_looking_at_safe_neighbor_8=True,
-   error_on_looking_outside_farm=True)
+], cancel_on_looking_at_safe_neighbor_8=True,
+   cancel_on_looking_outside_farm=True)
 
 tunnel = bf.Butterfly(*[
     [bf.MORPH_AT_LAST_DEATH_SPOT],

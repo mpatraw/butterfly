@@ -28,7 +28,7 @@ room = bf.Butterfly(*[
     [bf.LOOK_SHRINKING_RECT_AREA, [FLOOR, 3, 8]],
     [bf.LOOK_SHRINKING_CIRCLE_AREA, [FLOOR, 3, 8]],
     [bf.DIE_AFTER_N, [1]]
-], error_on_looking_at_safe=True)
+], cancel_on_looking_at_safe=True)
 
 tunnel = bf.Butterfly(*[
     [bf.MORPH_AT_LAST_DEATH_SPOT],

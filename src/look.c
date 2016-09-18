@@ -38,18 +38,18 @@ static void set_new_spot(
 	bf = farm->butterfly;
 
 	if (!IN_BOUNDS(farm, x, y)) {
-		if (bf->config && bf->config->error_on_looking_outside_farm) {
+		if (bf->config && bf->config->cancel_on_looking_outside_farm) {
 			farm->error = BF_ERROR_CANCEL;
 		}
 		return;
 	}
 
-	if (	bf->config && bf->config->error_on_looking_at_safe &&
+	if (	bf->config && bf->config->cancel_on_looking_at_safe &&
 		IS_SAFE_AT(farm, x, y)) {
 		farm->error = BF_ERROR_CANCEL;
 	}
 
-	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4p) {
+	if (bf->config && bf->config->cancel_on_looking_at_safe_neighbor_4p) {
 		for (d = 0; d < 4; ++d) {
 			dx = x + dir4p[d][0];
 			dy = y + dir4p[d][1];
@@ -63,7 +63,7 @@ static void set_new_spot(
 		}
 	}
 
-	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4x) {
+	if (bf->config && bf->config->cancel_on_looking_at_safe_neighbor_4x) {
 		for (d = 0; d < 4; ++d) {
 			dx = x + dir4x[d][0];
 			dy = y + dir4x[d][1];
@@ -77,7 +77,7 @@ static void set_new_spot(
 		}
 	}
 
-	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_8) {
+	if (bf->config && bf->config->cancel_on_looking_at_safe_neighbor_8) {
 		for (d = 0; d < 8; ++d) {
 			dx = x + dir8[d][0];
 			dy = y + dir8[d][1];

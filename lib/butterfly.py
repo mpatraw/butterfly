@@ -44,11 +44,11 @@ class _bf_instinct(Structure):
                 ("args", c_int * NARGS)]
 
 class _bf_config(Structure):
-    _fields_ = [("error_on_looking_at_safe", c_int),
-                ("error_on_looking_at_safe_neighbor_4p", c_int),
-                ("error_on_looking_at_safe_neighbor_4x", c_int),
-                ("error_on_looking_at_safe_neighbor_8", c_int),
-                ("error_on_looking_outside_farm", c_int),
+    _fields_ = [("cancel_on_looking_at_safe", c_int),
+                ("cancel_on_looking_at_safe_neighbor_4p", c_int),
+                ("cancel_on_looking_at_safe_neighbor_4x", c_int),
+                ("cancel_on_looking_at_safe_neighbor_8", c_int),
+                ("cancel_on_looking_outside_farm", c_int),
                 ("look_method", c_int),
                 ("enable_neighbor_look_8", c_int),
                 ("neighbor_look_8", c_int),

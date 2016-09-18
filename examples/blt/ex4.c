@@ -32,12 +32,12 @@ int main(void)
 {
 	int spots[HEIGHT][WIDTH] = {{WALL}};
 	struct bf_config room_config = {
-		.error_on_looking_at_safe = 1,
-		.error_on_looking_outside_farm = 1
+		.cancel_on_looking_at_safe = 1,
+		.cancel_on_looking_outside_farm = 1
 	};
 	struct bf_config tunnel_config = {
-		.error_on_looking_at_safe = 1,
-		.error_on_looking_outside_farm = 1,
+		.cancel_on_looking_at_safe = 1,
+		.cancel_on_looking_outside_farm = 1,
 		.look_method = BF_METHOD_CYCLE
 	};
 	struct bf_config cave_config = {

@@ -208,7 +208,7 @@ enum {
 	 */
 	BF_LOOK_RECT_AREA,
 	/* Changes the spots in a rect pattern centered on the butterfly. This
-	 * only works if the config option: .error_on_looking_at_safe is set.
+	 * only works if the config option: .cancel_on_looking_at_safe is set.
 	 * args[0] = tile
 	 * args[1] = minimum width
 	 * args[2] = minimum height
@@ -221,7 +221,7 @@ enum {
 	 */
 	BF_LOOK_CIRCLE_AREA,
 	/* Changes the spots in a circle pattern centered on the butterfly. This
-	 * only works if the config option: .error_on_looking_at_safe is set.
+	 * only works if the config option: .cancel_on_looking_at_safe is set.
 	 * args[0] = tile
 	 * args[1] = radius
 	 * args[2] = maximum radius
@@ -235,7 +235,7 @@ enum {
 	 */
 	BF_LOOK_DIAMOND_AREA,
 	/* Changes the spots in a diamond pattern centered on the butterfly. This
-	 * only works if the config option: .error_on_looking_at_safe is set.
+	 * only works if the config option: .cancel_on_looking_at_safe is set.
 	 * args[0] = tile
 	 * args[1] = minimum radius
 	 * args[2] = maximum radius
@@ -341,20 +341,19 @@ struct bf_instinct {
 };
 
 struct bf_config {
-	/* this will make the butterflies cancel when they
-	 * look at a safe location (to prevent overwrites)
+	/* this will make the butterflies cancel when they look at a safe
+	 * location (to prevent overwrites)
 	 * default = false
 	 */
-	int error_on_looking_at_safe;
-	int error_on_looking_at_safe_neighbor_4p;
-	int error_on_looking_at_safe_neighbor_4x;
-	int error_on_looking_at_safe_neighbor_8;
+	int cancel_on_looking_at_safe;
+	int cancel_on_looking_at_safe_neighbor_4p;
+	int cancel_on_looking_at_safe_neighbor_4x;
+	int cancel_on_looking_at_safe_neighbor_8;
 
-	/* this will make the butterflies stop when they look
-	 * outside the map.
+	/* this will make the butterflies stop when they look outside the map.
 	 * default = false
 	 */
-	int error_on_looking_outside_farm;
+	int cancel_on_looking_outside_farm;
 
 	/* the method to look, this can be one of:
 	 * BF_METHOD_RANDOM

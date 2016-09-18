@@ -25,7 +25,7 @@ f = bf.Farm(80, 24)
 f.spawn(bf.Butterfly(*seed), commit=True)
 fly = bf.Butterfly(*tunnel,
 				   look_method=bf.METHOD_CYCLE,
-				   error_on_looking_at_safe_neighbor_4x=True)
+				   cancel_on_looking_at_safe_neighbor_4x=True)
 f.spawn(fly, 100, commit=True)
 
 print(f.seed())

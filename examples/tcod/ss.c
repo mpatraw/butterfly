@@ -91,7 +91,7 @@ static void carve_randomly(struct bf_farm *farm)
 static void carve_room_and_corridor(struct bf_farm *farm)
 {
 	static struct bf_config room_config = {
-		.error_on_looking_at_safe = 1
+		.cancel_on_looking_at_safe = 1
 	};
 	static struct bf_instinct room[] = {
 		{.action = BF_MORPH_AT_RANDOM_SPOT},
