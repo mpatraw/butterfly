@@ -15,6 +15,9 @@ static int ensure_farm_is_init(struct bf_farm *farm)
 	struct point point;
 	int x, y;
 
+	farm->error = BF_ERROR_NONE;
+	farm->ncancels = 0;
+
 	if (farm->is_init) {
 		return 0;
 	}
@@ -297,6 +300,24 @@ static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)
 	}
 }
 
+static bool has_errors(struct bf_farm *farm)
+{
+	if (farm->error != BF_ERROR_NONE && farm->error != BF_ERROR_CANCEL) {
+		return true;
+	}
+
+	if (farm->error == BF_ERROR_CANCEL) {
+		farm->ncancels++;
+	}
+
+	if (farm->ncancels > farm->max_cancels) {
+		return true;
+	}
+
+	farm->error = BF_ERROR_NONE;
+	return false;
+}
+
 int bf_spawn(
 	struct bf_farm *farm,
 	struct bf_instinct *instincts,
@@ -309,17 +330,16 @@ int bf_spawn(
 		return -1;
 	}
 
-	farm->error = BF_ERROR_NONE;
 	bf = farm->butterfly;
 	bf->config = config;
 	bf->flutter = NULL;
 
 	do_morph_actions(bf, farm, instincts, count);
-	if (farm->error) {
+	if (has_errors(farm)) {
 		goto error;
 	}
 	do_goal_actions(bf, farm, instincts, count);
-	if (farm->error) {
+	if (has_errors(farm)) {
 		goto error;
 	}
 
@@ -327,15 +347,15 @@ int bf_spawn(
 	bf->last_morph_y = bf->y;
 
 	while (!check_if_should_die(bf, farm, instincts, count)) {
-		if (farm->error) {
+		if (has_errors(farm)) {
 			goto error;
 		}
 		do_look_actions(bf, farm, instincts, count);
-		if (farm->error) {
+		if (has_errors(farm)) {
 			goto error;
 		}
 		do_flutter_actions(bf, farm, instincts, count);
-		if (farm->error) {
+		if (has_errors(farm)) {
 			goto error;
 		}
 	}

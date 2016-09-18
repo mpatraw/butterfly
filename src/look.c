@@ -30,7 +30,7 @@ static void set_new_spot(
 		{-1, -1},
 		{ 1, -1},
 		{-1,  1},
-		{ 1, -1}
+		{ 1,  1}
 	};
 	struct butterfly *bf;
 	int d, dx, dy, s;

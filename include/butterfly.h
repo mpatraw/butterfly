@@ -328,6 +328,12 @@ struct bf_farm {
 	 */
 	int last_dangerous;
 
+	/* makes it so it requires more than one cancel before the butterfly
+	 * resets. this is to help against corridors running along each other
+	 * while still allowing one cancel to connect.
+	 */
+	int max_cancels;
+
 	/* internal */
 	int is_init;
 	void *rng_state;
@@ -336,6 +342,7 @@ struct bf_farm {
 	void *butterfly;
 	/* 0 if no error */
 	int error;
+	int ncancels;
 };
 
 struct bf_instinct {

@@ -31,6 +31,7 @@ class _bf_farm(Structure):
                 ("height", c_int),
                 ("seed", c_int),
                 ("last_dangerous", c_int),
+                ("max_cancels", c_int),
 
                 ("is_init", c_int),
                 ("rng_state", c_void_p),
@@ -178,6 +179,11 @@ class Farm(object):
         if not opt:
             return self._farm.last_dangerous
         self._farm.last_dangerous = opt
+
+    def max_cancels(self, opt=None):
+        if not opt:
+            return self._farm.max_cancels
+        self._farm.max_cancels = opt
 
     def spawn(self, bfs, ntimes=1, commit=False):
         if not isinstance(bfs, list):
