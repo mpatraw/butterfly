@@ -8,17 +8,20 @@ WIDTH = 80
 HEIGHT = 40
 
 WALL = 0
-FLOOR = 1
+CAVE_WALL = 1
+FLOOR = 2
+CAVE_FLOOR = 3
 
 farm = bf.Farm(WIDTH, HEIGHT)
+farm.last_dangerous(CAVE_WALL)
 
 cave = bf.Butterfly(*[
     [bf.MORPH_AT_RANDOM_SPOT],
     [bf.GOAL_RANDOM_SAFE_SPOT],
-    [bf.FLUTTER_WEIGHTED_4, [51]],
-    [bf.LOOK_PLUS_AREA, [FLOOR]],
+    [bf.FLUTTER_WEIGHTED_4, [70]],
+    [bf.LOOK_PLUS_AREA, [CAVE_FLOOR]],
     [bf.DIE_AT_SAFE_SPOT]
-])
+], enable_neighbor_look_8=True, neighbor_look_8=CAVE_WALL)
 
 room = bf.Butterfly(*[
     [bf.MORPH_AT_RANDOM_SPOT],
@@ -48,8 +51,13 @@ print(farm.seed())
 
 for y in xrange(HEIGHT):
     for x in xrange(WIDTH):
-    	if farm.spot_at(x, y) == 0:
+        s = farm.spot_at(x, y)
+    	if s == WALL:
         	print("#", end="")
-        else:
+        elif s == CAVE_WALL:
+            print("%", end="")
+        elif s == FLOOR:
         	print(".", end="")
+        elif s == CAVE_FLOOR:
+            print(",", end="")
     print()
