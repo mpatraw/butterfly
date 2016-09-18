@@ -383,8 +383,13 @@ struct bf_config {
 extern "C" {
 #endif
 
-/* Spawns a butterfly.
+/* Spawns a butterfly with a list of instincts. The changes won't be seen
+ * on the spots or by other butterflies until bf_commit is called.
  *
+ * If an error is returned, nothing will change after commit; the butterfly
+ * resets completely.
+ *
+ * Returns 0 on success or another value on error.
  */
 int bf_spawn(
 	struct bf_farm *farm,
@@ -398,7 +403,7 @@ void bf_commit(struct bf_farm *farm);
 /* Uses the internal RNG. Return a number [0,1)
  */
 double bf_random(struct bf_farm *farm);
-/* Queries for information.
+/* Queries for information like safe percentage.
  */
 void bf_query(struct bf_farm *farm, int query, int *out);
 /* If you spawn any butterflies, this should be called to clean up any
