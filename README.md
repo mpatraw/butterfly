@@ -60,7 +60,7 @@ Some map generators have a second step where they remove any orphaned areas that
 
 # The API!
 
-The API is aimed to be super simple, in fact, currently its only 5 functions. One for cleanup.
+The API is aimed to be super simple, in fact, currently it's only 5 functions. One for cleanup.
 
 ```c
 int bf_spawn(struct bf_farm *farm, struct bf_instinct *instincts, size_t count, struct bf_config *config);
