@@ -41,11 +41,11 @@ int main(void)
 	 *   guarantees this).
 	 */
 	struct bf_instinct carve[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_LINE},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
+		{.action = BF_MORPH_AT_RANDOM_SPOT},
+		{.action = BF_GOAL_RANDOM_SPOT},
+		{.action = BF_FLUTTER_LINE},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_DIE_AT_GOAL},
 	};
 	/* Run the instincts on our map. */
 	BF_SPAWN_ARR(&farm, carve, NULL);

@@ -38,7 +38,7 @@ int main(void)
 	struct bf_config tunnel_config = {
 		.error_on_looking_at_safe = 1,
 		.error_on_looking_outside_farm = 1,
-		.cycle_looking = 1
+		.look_method = BF_METHOD_CYCLE
 	};
 	struct bf_config cave_config = {
 		.enable_neighbor_look_8 = 1,
@@ -52,40 +52,40 @@ int main(void)
 		.last_dangerous = CAVE_WALL
 	};
 	struct bf_instinct room[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
-		{.event = BF_LOOK, .action = BF_LOOK_RECT_AREA, .args = {FLOOR, 3, 3}},
-		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 3}},
-		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 4}},
-		{.event = BF_LOOK, .action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 6}},
-		{.event = BF_DIE, .action = BF_DIE_AFTER_N, .args = {1}},
+		{.action = BF_MORPH_AT_RANDOM_SPOT},
+		{.action = BF_LOOK_RECT_AREA, .args = {FLOOR, 2, 2}},
+		{.action = BF_LOOK_RECT_AREA, .args = {FLOOR, 3, 3}},
+		{.action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 3}},
+		{.action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 4}},
+		{.action = BF_LOOK_CIRCLE_AREA, .args = {FLOOR, 6}},
+		{.action = BF_DIE_AFTER_N, .args = {1}},
 	};
 	struct bf_instinct tunnel[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-		{.event = BF_LOOK, .action = BF_LOOK_DIAMOND_AREA, .args = {FLOOR, 3}},
-		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+		{.action = BF_MORPH_AT_LAST_DEATH_SPOT},
+		{.action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.action = BF_FLUTTER_TUNNEL},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+		{.action = BF_LOOK_DIAMOND_AREA, .args = {FLOOR, 3}},
+		{.action = BF_DIE_AT_SAFE_SPOT},
 	};
 	struct bf_instinct cave[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_WEIGHTED_4, {60}},
-		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {CAVE_FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+		{.action = BF_MORPH_AT_RANDOM_SPOT},
+		{.action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.action = BF_FLUTTER_WEIGHTED_4, {60}},
+		{.action = BF_LOOK_PLUS_AREA, .args = {CAVE_FLOOR}},
+		{.action = BF_DIE_AT_SAFE_SPOT},
 	};
 	struct bf_instinct river[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_EDGE_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_EDGE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_WEIGHTED_4, {100}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {RIVER}},
-		{.event = BF_DIE, .action = BF_DIE_AT_GOAL},
+		{.action = BF_MORPH_AT_RANDOM_EDGE_SPOT},
+		{.action = BF_GOAL_RANDOM_EDGE_SPOT},
+		{.action = BF_FLUTTER_WEIGHTED_4, {100}},
+		{.action = BF_LOOK_1_AREA, .args = {RIVER}},
+		{.action = BF_DIE_AT_GOAL},
 	};
 
 	BF_SPAWN_ARR(&farm, room, NULL);

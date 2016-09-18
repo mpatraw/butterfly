@@ -1,6 +1,8 @@
 .tup/
 *.o
+*.pyc
 lib/libbutterfly.a
+lib/libbutterfly.so
 examples/ex0
 examples/ex1
 examples/ex2

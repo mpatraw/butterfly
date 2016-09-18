@@ -3,6 +3,7 @@ include_rules
 : foreach src/*.c |> !cc |> src/%B.o
 : foreach examples/*.c |> !cc |> examples/%B.o
 : src/*.o |> !ar |> lib/libbutterfly.a
+: src/*.o |> !shared |> lib/libbutterfly.so
 : examples/ex0.o lib/libbutterfly.a |> !exe |> examples/ex0
 : examples/ex1.o lib/libbutterfly.a |> !exe |> examples/ex1
 : examples/ex2.o lib/libbutterfly.a |> !exe |> examples/ex2

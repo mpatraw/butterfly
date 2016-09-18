@@ -113,14 +113,14 @@ static void copy_instincts_with_event(
 	size_t *dstcount,
 	struct bf_instinct *src,
 	size_t srccount,
-	int event)
+	int action_start, int action_end)
 {
 	size_t i, j;
 	*dstcount = 0;
 
 	for (i = 0; i < srccount; ++i) {
-		if (src[i].event == event) {
-			dst[*dstcount].event = src[i].event;
+		if (	src[i].action >= action_start &&
+			src[i].action <= action_end) {
 			dst[*dstcount].action = src[i].action;
 			for (j = 0; j < BF_NARGS; ++j) {
 				dst[*dstcount].args[j] =
@@ -144,7 +144,7 @@ static void do_morph_actions(
 	copy_instincts_with_event(
 		morphs, &nmorphs,
 		instincts, count,
-		BF_MORPH);
+		BF_MORPH_START, BF_MORPH_END);
 
 	if (nmorphs == 0) {
 		return;
@@ -167,7 +167,7 @@ static void do_goal_actions(
 	copy_instincts_with_event(
 		goals, &ngoals,
 		instincts, count,
-		BF_GOAL);
+		BF_GOAL_START, BF_GOAL_END);
 
 	if (ngoals == 0) {
 		return;
@@ -191,7 +191,7 @@ static bool check_if_should_die(
 	copy_instincts_with_event(
 		deaths, &ndeaths,
 		instincts, count,
-		BF_DIE);
+		BF_DIE_START, BF_DIE_END);
 
 	for (i = 0; i < ndeaths; ++i) {
 		/* ensure each check is run */
@@ -215,16 +215,17 @@ static void do_look_actions(
 	copy_instincts_with_event(
 		looks, &nlooks,
 		instincts, count,
-		BF_LOOK);
+		BF_LOOK_START, BF_LOOK_END);
 
 	if (nlooks == 0) {
 		return;
 	}
 
-	if (bf->config && bf->config->cycle_looking) {
+	if (bf->config && bf->config->look_method == BF_METHOD_CYCLE) {
 		c = c % nlooks;
 		look(bf, farm, &looks[c]);
 		c++;
+	} else if (bf->config && bf->config->look_method == BF_METHOD_PICK) {
 	} else {
 		r = random_next_index(farm->rng_state, nlooks);
 		look(bf, farm, &looks[r]);
@@ -244,7 +245,7 @@ static void do_flutter_actions(
 	copy_instincts_with_event(
 		flutters, &nflutters,
 		instincts, count,
-		BF_FLUTTER);
+		BF_FLUTTER_START, BF_FLUTTER_END);
 
 	if (nflutters == 0) {
 		return;

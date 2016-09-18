@@ -15,6 +15,7 @@ ifeq (@(TUP_PLATFORM),maxosx)
 endif
 
 CFLAGS += -std=c99
+CFLAGS += -fPIC
 CFLAGS += -Iinclude
 CFLAGS += -Ivendor
 ifeq (@(BUILD),DEBUG)
@@ -32,4 +33,5 @@ LDFLAGS += -Lvendor
 !bltexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -lBearLibTerminal %f -o %o |>
 !tcodexe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) -ltcod %f -o %o |>
 !exe = |> ^ cc %f -o %o^ gcc $(LDFLAGS) %f -o %o |>
+!shared = |> ^ cc %f -shared -o %o^ gcc %f -shared -o %o |>
 !ar = |> ar rcs %o %f |>

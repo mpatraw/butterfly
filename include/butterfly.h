@@ -8,28 +8,13 @@ enum {
 	BF_NARGS = 5
 };
 
-/*
- * Life events for a butterfly.
- */
 enum {
-	/* Where to spawn (optional). Default is last death location.) */
-	BF_MORPH,
-	/* Where to go (optional). Default is no goal. */
-	BF_GOAL,
-	/* How to get to the goal (optional). Default is no movement. */
-	BF_FLUTTER,
-	/* Pattern to dig out at each step (optional). */
-	BF_LOOK,
-	/* How and when to die (required). */
-	BF_DIE
-};
-
-enum {
+	BF_MORPH_START,
 	/* Morph where the last butterfly died.
 	 *
 	 * Default if a morph instinct is not specified.
 	 */
-	BF_MORPH_AT_LAST_DEATH_SPOT,
+	BF_MORPH_AT_LAST_DEATH_SPOT = BF_MORPH_START,
 	/* Morph where the last butterfly morphed.
 	 */
 	BF_MORPH_AT_LAST_MORPH_SPOT,
@@ -81,15 +66,17 @@ enum {
 	BF_MORPH_AT_RANDOM_NORTHSOUTH_EDGE_SPOT,
 	/* Morph at a random spot on an edge.
 	 */
-	BF_MORPH_AT_RANDOM_EDGE_SPOT
-};
+	BF_MORPH_AT_RANDOM_EDGE_SPOT,
+	BF_MORPH_END = BF_MORPH_AT_RANDOM_EDGE_SPOT,
 
-enum {
+
+
+	BF_GOAL_START,
 	/* Set goal to a fixed location.
 	 * args[0] = x location
 	 * args[1] = y location
 	 */
-	BF_GOAL_FIXED_SPOT,
+	BF_GOAL_FIXED_SPOT = BF_GOAL_START,
 	/* Set goal to a random spot.
 	 */
 	BF_GOAL_RANDOM_SPOT,
@@ -133,13 +120,15 @@ enum {
 	BF_GOAL_RANDOM_NORTHSOUTH_EDGE_SPOT,
 	/* Set goal to a random spot on an edge.
 	 */
-	BF_GOAL_RANDOM_EDGE_SPOT
-};
+	BF_GOAL_RANDOM_EDGE_SPOT,
+	BF_GOAL_END = BF_GOAL_RANDOM_EDGE_SPOT,
 
-enum {
+
+
+	BF_FLUTTER_START,
 	/* Don't move.
 	 */
-	BF_FLUTTER_STILL,
+	BF_FLUTTER_STILL = BF_FLUTTER_START,
 	/* Move to the goal with a weighted random walk. If no goal specified,
 	 * this is completely random.
 	 * args[0] = weight (0-100), 0 means away from, 100 means towards.
@@ -159,13 +148,15 @@ enum {
 	/* Move to the goal in a line path. This uses Bresenham's line alogirithm.
 	 * If no goal specified, does nothing.
 	 */
-	BF_FLUTTER_LINE
-};
+	BF_FLUTTER_LINE,
+	BF_FLUTTER_END = BF_FLUTTER_LINE,
 
-enum {
+
+
+	BF_LOOK_START,
 	/* No op. Doesn't change any spots.
 	 */
-	BF_LOOK_NOWHERE,
+	BF_LOOK_NOWHERE = BF_LOOK_START,
 	/* Changes every spot on the farm.
 	 * args[0] = tile
 	 */
@@ -247,14 +238,16 @@ enum {
 	 * XXX: not implemented correctly.
 	 */
 	BF_LOOK_SHRINKING_DIAMOND_AREA,
-};
+	BF_LOOK_END = BF_LOOK_SHRINKING_DIAMOND_AREA,
 
-enum {
+
+
+	BF_DIE_START,
 	/* The butterfly will die when landing on a specific coordinate.
 	 * args[0] = x
 	 * args[1] = y
 	 */
-	BF_DIE_AT_FIXED_SPOT,
+	BF_DIE_AT_FIXED_SPOT = BF_DIE_START,
 	/* The butterfly will die when it flutters to any safe spot.
 	 */
 	BF_DIE_AT_SAFE_SPOT,
@@ -271,7 +264,14 @@ enum {
 	BF_DIE_AFTER_N,
 	/* The butterfly has a one in N chance to die every flutter and look.
 	 */
-	BF_DIE_ONE_IN
+	BF_DIE_ONE_IN,
+	BF_DIE_END = BF_DIE_ONE_IN
+};
+
+enum {
+	BF_METHOD_RANDOM,
+	BF_METHOD_CYCLE,
+	BF_METHOD_PICK
 };
 
 enum {
@@ -330,7 +330,6 @@ struct bf_farm {
 };
 
 struct bf_instinct {
-	int event;
 	int action;
 	int args[BF_NARGS];
 };
@@ -348,11 +347,13 @@ struct bf_config {
 	 */
 	int error_on_looking_outside_farm;
 
-	/* this cycles through all the looking instincts instead of
-	 * randomly selecting one.
+	/* the method to look, this can be one of:
+	 * BF_METHOD_RANDOM
+	 * BF_METHOD_CYCLE
+	 * BF_METHOD_PICK
 	 * default = false
 	 */
-	int cycle_looking;
+	int look_method;
 
 	/* this makes it so any tile touched, all the neighbors are imbued with
 	 * this spot. this will only overwrite dangerous spots.

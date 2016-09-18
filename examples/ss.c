@@ -59,9 +59,9 @@ static void draw_tile(int x, int y, unsigned tile, bool vis)
 static void carve_seed(struct bf_farm *farm)
 {
 	static struct bf_instinct seed[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_FIXED_SPOT, .args = {42, 42}},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AFTER_N, {1}}
+		{.action = BF_MORPH_AT_FIXED_SPOT, .args = {42, 42}},
+		{.action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
+		{.action = BF_DIE_AFTER_N, {1}}
 	};
 	/* Run the instincts on our map. */
 	BF_SPAWN_ARR(farm, seed, NULL);
@@ -76,11 +76,11 @@ static void carve_randomly(struct bf_farm *farm)
 		.neighbor_look_8 = DIRT_WALL,
 	};
 	static struct bf_instinct cave[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_WEIGHTED_4, {51}},
-		{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {DIRT_FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT}
+		{.action = BF_MORPH_AT_RANDOM_SPOT},
+		{.action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.action = BF_FLUTTER_WEIGHTED_4, {51}},
+		{.action = BF_LOOK_PLUS_AREA, .args = {DIRT_FLOOR}},
+		{.action = BF_DIE_AT_SAFE_SPOT}
 	};
 	BF_SPAWN_ARR(farm, cave, &cave_config);
 	bf_commit(farm);
@@ -92,17 +92,17 @@ static void carve_room_and_corridor(struct bf_farm *farm)
 		.error_on_looking_at_safe = 1
 	};
 	static struct bf_instinct room[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-		{.event = BF_LOOK, .action = BF_LOOK_SHRINKING_RECT_AREA, .args = {STONE_FLOOR, 3, 8}},
-		{.event = BF_LOOK, .action = BF_LOOK_SHRINKING_CIRCLE_AREA, .args = {STONE_FLOOR, 3, 8}},
-		{.event = BF_DIE, .action = BF_DIE_AFTER_N, {1}}
+		{.action = BF_MORPH_AT_RANDOM_SPOT},
+		{.action = BF_LOOK_SHRINKING_RECT_AREA, .args = {STONE_FLOOR, 3, 8}},
+		{.action = BF_LOOK_SHRINKING_CIRCLE_AREA, .args = {STONE_FLOOR, 3, 8}},
+		{.action = BF_DIE_AFTER_N, {1}}
 	};
 	static struct bf_instinct tunnel[] = {
-		{.event = BF_MORPH, .action = BF_MORPH_AT_LAST_DEATH_SPOT},
-		{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-		{.event = BF_FLUTTER, .action = BF_FLUTTER_TUNNEL},
-		{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
-		{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+		{.action = BF_MORPH_AT_LAST_DEATH_SPOT},
+		{.action = BF_GOAL_RANDOM_SAFE_SPOT},
+		{.action = BF_FLUTTER_TUNNEL},
+		{.action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
+		{.action = BF_DIE_AT_SAFE_SPOT},
 	};
 	if (BF_SPAWN_ARR(farm, room, &room_config)) {
 		/* failed to generate. */
