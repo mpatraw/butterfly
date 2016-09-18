@@ -231,6 +231,26 @@ class Farm(object):
         p = self.query(QUERY_SAFE_PERCENTAGE)
         return p[0] / 100.
 
+    def dangerous_percentage(self):
+        p = self.query(QUERY_DANGEROUS_PERCENTAGE)
+        return p[0] / 100.
+
+    def random_safe_spot(self):
+        p = self.query(QUERY_RANDOM_SAFE_SPOT)
+        return p[0], p[1]
+
+    def random_dangerous_spot(self):
+        p = self.query(QUERY_RANDOM_DANGEROUS_SPOT)
+        return p[0], p[1]
+
+    def last_death_spot(self):
+        p = self.query(QUERY_LAST_DEATH_SPOT)
+        return p[0], p[1]
+
+    def last_morph_spot(self):
+        p = self.query(QUERY_LAST_MORPH_SPOT)
+        return p[0], p[1]
+
 def random_1x1(tile):
     return Butterfly(*[
         [MORPH_AT_RANDOM_SPOT],
