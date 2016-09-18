@@ -10,7 +10,7 @@ include_rules
 : examples/plain/ex3.o lib/libbutterfly.a |> !exe |> examples/plain/ex3
 ifeq (@(BUILD_BEARLIBTERMINAL_EXAMPLES),TRUE)
 : foreach examples/blt/*.c |> !cc |> examples/blt/%B.o
-: examples/blt/ex4.o lib/libbutterfly.a |> !bltexe |> examples/blt/ex4
+: examples/blt/ex0.o lib/libbutterfly.a |> !bltexe |> examples/blt/ex0
 endif
 ifeq (@(BUILD_TCOD_EXAMPLES),TRUE)
 : foreach examples/tcod/*.c |> !cc |> examples/tcod/%B.o
