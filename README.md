@@ -92,9 +92,9 @@ struct bf_farm farm = {
  *   looking just once.
  */
 struct bf_instinct carve_start[] = {
-	{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-	{.event = BF_LOOK, .action = BF_LOOK_1_AREA, .args = {FLOOR}},
-	{.event = BF_DIE, .action = BF_DIE_AFTER_N, {1}}
+	{.action = BF_MORPH_AT_RANDOM_SPOT},
+	{.action = BF_LOOK_1_AREA, .args = {FLOOR}},
+	{.action = BF_DIE_AFTER_N, {1}}
 };
 /* The actual carving instincts. We build by always finding our way
  * back to a safe spot.
@@ -108,11 +108,11 @@ struct bf_instinct carve_start[] = {
  * - And finally how to die, by arriving at any safe spot.
  */
 struct bf_instinct carve[] = {
-	{.event = BF_MORPH, .action = BF_MORPH_AT_RANDOM_SPOT},
-	{.event = BF_GOAL, .action = BF_GOAL_RANDOM_SAFE_SPOT},
-	{.event = BF_FLUTTER, .action = BF_FLUTTER_RANDOMLY_TO_GOAL, {60}},
-	{.event = BF_LOOK, .action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
-	{.event = BF_DIE, .action = BF_DIE_AT_SAFE_SPOT},
+	{.action = BF_MORPH_AT_RANDOM_SPOT},
+	{.action = BF_GOAL_RANDOM_SAFE_SPOT},
+	{.action = BF_FLUTTER_RANDOMLY_TO_GOAL, {60}},
+	{.action = BF_LOOK_PLUS_AREA, .args = {FLOOR}},
+	{.action = BF_DIE_AT_SAFE_SPOT},
 };
 /* Run the instincts to produce our first safe area so the other butterflies
  * can find it! This only needs to be run once.
@@ -186,4 +186,58 @@ Just kidding. Here is what it can actually produce.
 ##################.#####...########...#....#####################################
 ##############..#....##.....########.###########################################
 #############...............####################################################
+
+# An Even Simpler Example (In Python)
+
+Okay, so the logic isn't as simple, but its Python so...
+
+```py
+import butterfly as bf
+
+room = bf.Butterfly(*[
+    [bf.MORPH_AT_RANDOM_SPOT],
+    [bf.LOOK_RECT_AREA, [1, 3, 3]],
+    [bf.DIE_AFTER_N, [1]]
+], error_on_looking_at_safe_neighbor_8=True)
+
+tunnel = bf.Butterfly(*[
+    [bf.MORPH_AT_LAST_DEATH_SPOT],
+    [bf.GOAL_RANDOM_SAFE_SPOT],
+    [bf.FLUTTER_TUNNEL],
+    [bf.LOOK_1_AREA, [1]],
+    [bf.DIE_AT_SAFE_SPOT]
+])
+
+f = bf.Farm(80, 24)
+f.spawn(bf.random_nxm(1, 3, 3), commit=True)
+f.spawn([room, tunnel], 50, commit=True)
+```
+
+This can produce something like:
+
+```
+##############################.......####.......###################.......######
+##############################.......####.......###################.......######
+##############################.......####.......###################.......######
+##.......###.......###########.......####.......###################.......######
+##.......###.......###########.......####.......######################.#########
+##.......###.......##############.###########.########################.#########
+##.......###.......##############.###########.########################.#########
+##.......###.......##############.###########.########################.#########
+##.......###.......##############.###########.########################.#########
+##.......###.......##############...............................................
+####..#########.##########################################################......
+####..#########.##########################################################......
+####..#########.##########################################################......
+####..#########.##########################################################......
+####..######....................................................................
+####..######.......#######################################################......
+####..######.......########################.......##############################
+####...............########################.......##############################
+####.#######......................................#######################.......
+####.#######.......##############.#########.......#######################.......
+#.......####.......####.......###.#########.......#######################.......
+#.......###############.......###.#########.....................................
+#.......###############.......###.#########.......#######################.......
+#.......###############...........#######################################.......
 ```

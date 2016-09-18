@@ -176,19 +176,27 @@ class Farm(object):
             return self._farm.last_dangerous
         self._farm.last_dangerous = opt
 
-    def spawn(self, bf, ntimes=1, commit=False):
-        length = len(bf._instincts)
-        if length == 0:
-            return
-        instincts = (_bf_instinct * length)(*bf._instincts)
+    def spawn(self, bfs, ntimes=1, commit=False):
+        if not isinstance(bfs, list):
+            bfs = [bfs]
         ret = None
         for i in xrange(ntimes):
-            ret = _library.bf_spawn(self._farm, instincts, length, bf._config)
-            # if we are not commiting then an error would reset bf
-            if not commit and ret != ERROR_NONE:
-                break
-            if commit and ret == ERROR_NONE:
-                self.commit()
+            for bf in bfs:
+                length = len(bf._instincts)
+                if length == 0:
+                    break
+                instincts = (_bf_instinct * length)(*bf._instincts)
+                ret = _library.bf_spawn(self._farm, instincts, length, bf._config)
+                # if we are not commiting then an error would reset bf
+                if not commit and ret != ERROR_NONE:
+                    break
+            else:
+                # if the inner loop exited normally we commit when there
+                # was no error
+                if commit and ret == ERROR_NONE:
+                    self.commit()
+                continue
+            break
         return ret
 
     def commit(self):
@@ -216,3 +224,17 @@ class Farm(object):
 
     def spot_at(self, x, y):
         return self._farm.spots[y * self._farm.width + x]
+
+def random_1x1(tile):
+    return Butterfly(*[
+        [MORPH_AT_RANDOM_SPOT],
+        [LOOK_1_AREA, [tile]],
+        [DIE_AFTER_N, [1]]
+    ])
+
+def random_nxm(tile, n, m):
+    return Butterfly(*[
+        [MORPH_AT_RANDOM_SPOT],
+        [LOOK_RECT_AREA, [tile, n, m]],
+        [DIE_AFTER_N, [1]]
+    ])
