@@ -4,7 +4,7 @@
 
 **Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps.
 
-Here is a screenshot of a simple dungeon with caves.
+Here is a screenshot of a simple dungeon with caves. The full source code (using libtcod) is here: [ss.c](https://github.com/mpatraw/butterfly/blob/master/examples/tcod/ss.c), and the distilled version (just dungeon generation code) is here: [ss.py](https://github.com/mpatraw/butterfly/blob/master/examples/python/ss.py).
 
 ![screenshot](https://github.com/mpatraw/butterfly/raw/master/doc/ss.png "screenshot")
 
@@ -72,7 +72,7 @@ void bf_cleanup(struct bf_farm *farm);
 
 # Simple Example (With Comments)
 
-This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/blob/master/examples/ex1.c). Clone the repository and play with the values.
+This example builds a cave. You can see the full source here: [ex1.c](https://github.com/mpatraw/butterfly/blob/master/examples/plain/ex1.c). Clone the repository and play with the values.
 
 ```c
 /* This can be created any way you'd like. This is an 80x24 map filled

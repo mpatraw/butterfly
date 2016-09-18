@@ -206,7 +206,7 @@ class Farm(object):
         return _library.bf_random(self._farm)
 
     def query(self, what):
-        ret = (c_int * MAX_QUERY_RET)([0 for i in xrange(MAX_QUERY_RET)])
+        ret = (c_int * MAX_QUERY_RET)()
         _library.bf_query(self._farm, what, ret)
         return ret
 
@@ -224,6 +224,10 @@ class Farm(object):
 
     def spot_at(self, x, y):
         return self._farm.spots[y * self._farm.width + x]
+
+    def safe_percentage(self):
+        p = self.query(QUERY_SAFE_PERCENTAGE)
+        return p[0] / 100.
 
 def random_1x1(tile):
     return Butterfly(*[
