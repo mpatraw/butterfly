@@ -30,12 +30,13 @@ Controlling these steps is done with an array of "instincts," which you pass to 
 
 When a butterfly spawns, it runs through this logic to execute each instinct:
 
-* Pick random morph instinct.
-* Pick random goal instinct.
+* Pick random morph instinct
+* Pick random goal instinct
+* Pick random flutter instinct
 * Repeat
- * Check if any of the death instincts are true and break if so.
- * Pick random flutter instinct and use only that one
- * Pick random look instinct.
+ * Check if any of the death instincts are true and break if so
+ * Use the picked flutter instinct
+ * Pick random look instinct
 
 ## Safe & Dangerous (Walkable & Obstructed)
 
