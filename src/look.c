@@ -20,11 +20,17 @@ static void set_new_spot(
 		{ 1,  0},
 		{ 1,  1},
 	};
-	static int dir4[4][2] = {
+	static int dir4p[4][2] = {
 		{-1,  0},
 		{ 0, -1},
 		{ 0,  1},
 		{ 1,  0}
+	};
+	static int dir4x[4][2] = {
+		{-1, -1},
+		{ 1, -1},
+		{-1,  1},
+		{ 1, -1}
 	};
 	struct butterfly *bf;
 	int d, dx, dy, s;
@@ -43,10 +49,24 @@ static void set_new_spot(
 		farm->error = BF_ERROR_CANCEL;
 	}
 
-	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4) {
+	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4p) {
 		for (d = 0; d < 4; ++d) {
-			dx = x + dir4[d][0];
-			dy = y + dir4[d][1];
+			dx = x + dir4p[d][0];
+			dy = y + dir4p[d][1];
+			if (!IN_BOUNDS(farm, dx, dy)) {
+				continue;
+			}
+			s = SPOT_AT(farm->spots, farm->width, dx, dy);
+			if (IS_SAFE(farm, s)) {
+				farm->error = BF_ERROR_CANCEL;
+			}
+		}
+	}
+
+	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4x) {
+		for (d = 0; d < 4; ++d) {
+			dx = x + dir4x[d][0];
+			dy = y + dir4x[d][1];
 			if (!IN_BOUNDS(farm, dx, dy)) {
 				continue;
 			}
@@ -90,8 +110,8 @@ static void set_new_spot(
 
 	if (bf->config && bf->config->enable_neighbor_look_4) {
 		for (d = 0; d < 4; ++d) {
-			dx = x + dir4[d][0];
-			dy = y + dir4[d][1];
+			dx = x + dir4p[d][0];
+			dy = y + dir4p[d][1];
 			if (!IN_BOUNDS(farm, dx, dy)) {
 				continue;
 			}

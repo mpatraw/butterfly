@@ -45,7 +45,8 @@ class _bf_instinct(Structure):
 
 class _bf_config(Structure):
     _fields_ = [("error_on_looking_at_safe", c_int),
-                ("error_on_looking_at_safe_neighbor_4", c_int),
+                ("error_on_looking_at_safe_neighbor_4p", c_int),
+                ("error_on_looking_at_safe_neighbor_4x", c_int),
                 ("error_on_looking_at_safe_neighbor_8", c_int),
                 ("error_on_looking_outside_farm", c_int),
                 ("look_method", c_int),
@@ -169,6 +170,11 @@ class Farm(object):
         self._farm.seed = seed or 0
         self._farm.last_dangerous = 0
         self._farm.is_init = 0
+
+    def last_dangerous(self, opt=None):
+        if not opt:
+            return self._farm.last_dangerous
+        self._farm.last_dangerous = opt
 
     def spawn(self, bf, ntimes=1, commit=False):
         length = len(bf._instincts)
