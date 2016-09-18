@@ -2,7 +2,7 @@
 
 # Butterfly
 
-**Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps. The name was chosen because butterflies move in a random pattern while still moving towards a goal location.
+**Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps. The name was chosen because butterflies move in random patterns while still moving towards a goal location.
 
 Here is a screenshot of a simple dungeon with caves. The full source code (using libtcod) is here: [ss.c](https://github.com/mpatraw/butterfly/blob/master/examples/tcod/ss.c), and the distilled version (just dungeon generation code) is here: [ss.py](https://github.com/mpatraw/butterfly/blob/master/examples/python/ss.py).
 
@@ -21,6 +21,7 @@ Here is a screenshot of a simple dungeon with caves. The full source code (using
 The steps are:
 
 * **Morph** (Optional) - This is where the butterfly starts its "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
+When not provided, the default is the last death location of the butterfly or 0,0.
 * **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
 * **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line.
 * **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
