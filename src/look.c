@@ -43,6 +43,34 @@ static void set_new_spot(
 		farm->error = BF_ERROR_CANCEL;
 	}
 
+	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_4) {
+		for (d = 0; d < 4; ++d) {
+			dx = x + dir4[d][0];
+			dy = y + dir4[d][1];
+			if (!IN_BOUNDS(farm, dx, dy)) {
+				continue;
+			}
+			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			if (IS_SAFE(farm, s)) {
+				farm->error = BF_ERROR_CANCEL;
+			}
+		}
+	}
+
+	if (bf->config && bf->config->error_on_looking_at_safe_neighbor_8) {
+		for (d = 0; d < 8; ++d) {
+			dx = x + dir8[d][0];
+			dy = y + dir8[d][1];
+			if (!IN_BOUNDS(farm, dx, dy)) {
+				continue;
+			}
+			s = SPOT_AT(bf->new_spots, farm->width, dx, dy);
+			if (IS_SAFE(farm, s)) {
+				farm->error = BF_ERROR_CANCEL;
+			}
+		}
+	}
+
 	SPOT_AT(bf->new_spots, farm->width, x, y) = to;
 
 	if (bf->config && bf->config->enable_neighbor_look_8) {

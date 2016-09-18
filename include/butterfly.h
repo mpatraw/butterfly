@@ -340,6 +340,8 @@ struct bf_config {
 	 * default = false
 	 */
 	int error_on_looking_at_safe;
+	int error_on_looking_at_safe_neighbor_4;
+	int error_on_looking_at_safe_neighbor_8;
 
 	/* this will make the butterflies stop when they look
 	 * outside the map.
