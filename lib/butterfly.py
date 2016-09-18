@@ -134,7 +134,7 @@ QUERY_LAST_MORPH_SPOT = range(6)
 ERROR_NONE,\
 ERROR_CANCEL,\
 ERROR_NO_DEATH,\
-ERROR_NO_MEM = range(3)
+ERROR_NO_MEM = range(4)
 
 class Butterfly(object):
 
