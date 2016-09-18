@@ -24,7 +24,7 @@ static void set_new_spot(
 		{-1,  0},
 		{ 0, -1},
 		{ 0,  1},
-		{ 0,  1}
+		{ 1,  0}
 	};
 	struct butterfly *bf;
 	int d, dx, dy, s;

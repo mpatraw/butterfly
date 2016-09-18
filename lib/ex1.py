@@ -10,9 +10,11 @@ instincts = [
     [bf.DIE_AFTER_N, [1]]
 ]
 
-f = bf.Farm(80, 24)
+f = bf.Farm(80, 24, seed=1474165990)
 bf = bf.Butterfly(*instincts, error_on_looking_at_safe_neighbor_4=True)
-f.spawn(bf, 20, commit=True)
+f.spawn(bf, 50, commit=True)
+
+print(f.seed())
 
 for y in xrange(24):
     for x in xrange(80):
