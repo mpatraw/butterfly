@@ -12,6 +12,8 @@ Here is a screenshot of a simple dungeon with caves. The full source code (using
 
 **Butterfly** uses [tup](http://gittup.org/tup/) for its build system and running `tup upd` should give you everything you need, including the examples.
 
+By default the TCOD and BearLibTerminal examples will not build. If you have either of these on your system you can change the `tup.config` file to have `CONFIG_BUILD_TCOD_EXAMPLES` or `CONFIG_BUILD_BEARLIBTERMINAL_EXAMPLES` set to `TRUE`. Running `tup upd` will then build those examples.
+
 # Algorithm
 
 ## Steps
