@@ -124,6 +124,7 @@ struct butterfly {
 	int last_death_x;
 	int last_death_y;
 	struct bf_instinct *flutter;
+	struct bf_instinct *look;
 };
 
 void morph(

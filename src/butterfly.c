@@ -226,6 +226,11 @@ static void do_look_actions(
 		look(bf, farm, &looks[c]);
 		c++;
 	} else if (bf->config && bf->config->look_method == BF_METHOD_PICK) {
+		if (!bf->look) {
+			r = random_next_index(farm->rng_state, nlooks);
+			bf->look = &looks[r];
+		}
+		look(bf, farm, bf->look);
 	} else {
 		r = random_next_index(farm->rng_state, nlooks);
 		look(bf, farm, &looks[r]);
