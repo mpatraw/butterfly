@@ -39,14 +39,14 @@ static void set_new_spot(
 
 	if (!IN_BOUNDS(farm, x, y)) {
 		if (bf->config && bf->config->cancel_on_looking_outside_farm) {
-			farm->error = BF_ERROR_CANCEL;
+			farm->ncancels++;
 		}
 		return;
 	}
 
 	if (	bf->config && bf->config->cancel_on_looking_at_safe &&
 		IS_SAFE_AT(farm, x, y)) {
-		farm->error = BF_ERROR_CANCEL;
+		farm->ncancels++;
 	}
 
 	if (bf->config && bf->config->cancel_on_looking_at_safe_neighbor_4p) {
@@ -58,7 +58,7 @@ static void set_new_spot(
 			}
 			s = SPOT_AT(farm->spots, farm->width, dx, dy);
 			if (IS_SAFE(farm, s)) {
-				farm->error = BF_ERROR_CANCEL;
+				farm->ncancels++;
 			}
 		}
 	}
@@ -72,7 +72,7 @@ static void set_new_spot(
 			}
 			s = SPOT_AT(farm->spots, farm->width, dx, dy);
 			if (IS_SAFE(farm, s)) {
-				farm->error = BF_ERROR_CANCEL;
+				farm->ncancels++;
 			}
 		}
 	}
@@ -86,7 +86,7 @@ static void set_new_spot(
 			}
 			s = SPOT_AT(farm->spots, farm->width, dx, dy);
 			if (IS_SAFE(farm, s)) {
-				farm->error = BF_ERROR_CANCEL;
+				farm->ncancels++;
 			}
 		}
 	}

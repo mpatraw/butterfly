@@ -15,7 +15,6 @@ static int ensure_farm_is_init(struct bf_farm *farm)
 	struct point point;
 	int x, y;
 
-	farm->error = BF_ERROR_NONE;
 	farm->ncancels = 0;
 
 	if (farm->is_init) {
@@ -302,19 +301,15 @@ static void commit_new_spots(struct butterfly *bf, struct bf_farm *farm)
 
 static bool has_errors(struct bf_farm *farm)
 {
-	if (farm->error != BF_ERROR_NONE && farm->error != BF_ERROR_CANCEL) {
+	if (farm->error != BF_ERROR_NONE) {
 		return true;
-	}
-
-	if (farm->error == BF_ERROR_CANCEL) {
-		farm->ncancels++;
 	}
 
 	if (farm->ncancels > farm->max_cancels) {
+		farm->error = BF_ERROR_CANCEL;
 		return true;
 	}
 
-	farm->error = BF_ERROR_NONE;
 	return false;
 }
 
@@ -330,6 +325,10 @@ int bf_spawn(
 		return -1;
 	}
 
+	if (has_errors(farm)) {
+		return farm->error;
+	}
+
 	bf = farm->butterfly;
 	bf->config = config;
 	bf->flutter = NULL;
@@ -341,6 +340,10 @@ int bf_spawn(
 	do_goal_actions(bf, farm, instincts, count);
 	if (has_errors(farm)) {
 		goto error;
+	}
+
+	if (bf->y == 16) {
+		printf("%d, %d -> %d, %d\n", bf->x, bf->y, bf->goal_x, bf->goal_y);
 	}
 
 	bf->last_morph_x = bf->x;
@@ -374,13 +377,17 @@ int bf_spawn(
 
 error:
 	reset_butterfly(bf, farm, true);
-	return -farm->error;
+	return farm->error;
 }
 
 void bf_commit(struct bf_farm *farm)
 {
 	struct butterfly *bf = farm->butterfly;
-	commit_new_spots(bf, farm);
+	if (farm->error) {
+		farm->error = BF_ERROR_NONE;
+	} else {
+		commit_new_spots(bf, farm);
+	}
 }
 
 double bf_random(struct bf_farm *farm)

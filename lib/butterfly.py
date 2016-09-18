@@ -185,27 +185,29 @@ class Farm(object):
             return self._farm.max_cancels
         self._farm.max_cancels = opt
 
+    def spawn_1(self, bfs, commit=False):
+        if not isinstance(bfs, list):
+            bfs = [bfs]
+        for bf in bfs:
+            length = len(bf._instincts)
+            if length == 0:
+                continue
+            instincts = (_bf_instinct * length)(*bf._instincts)
+            ret = _library.bf_spawn(self._farm, instincts, length, bf._config)
+            # an error means everything fails until commit.
+            if ret != ERROR_NONE:
+                self.commit()
+                return ret
+        if commit:
+            self.commit()
+        return ERROR_NONE
+
     def spawn(self, bfs, ntimes=1, commit=False):
         if not isinstance(bfs, list):
             bfs = [bfs]
         ret = None
         for i in xrange(ntimes):
-            for bf in bfs:
-                length = len(bf._instincts)
-                if length == 0:
-                    break
-                instincts = (_bf_instinct * length)(*bf._instincts)
-                ret = _library.bf_spawn(self._farm, instincts, length, bf._config)
-                # if we are not commiting then an error would reset bf
-                if not commit and ret != ERROR_NONE:
-                    break
-            else:
-                # if the inner loop exited normally we commit when there
-                # was no error
-                if commit and ret == ERROR_NONE:
-                    self.commit()
-                continue
-            break
+            ret = self.spawn_1(bfs, commit)
         return ret
 
     def commit(self):
