@@ -194,7 +194,7 @@ static bool check_if_should_die(
 		BF_DIE_START, BF_DIE_END);
 
 	if (ndeaths == 0) {
-		bf->error = BF_ERROR_NO_DEATH;
+		farm->error = BF_ERROR_NO_DEATH;
 		return true;
 	}
 
