@@ -7,10 +7,8 @@
 
 #include <butterfly.h>
 
-#define WIDTH	80
-#define HEIGHT	40
-#define PX	40
-#define PY	20
+#define WIDTH   160
+#define HEIGHT  80
 
 struct tile_type {
 	int face;
@@ -61,7 +59,7 @@ static void draw_tile(int x, int y, unsigned tile, bool vis)
 static void carve_seed(struct bf_farm *farm)
 {
 	static struct bf_instinct seed[] = {
-		{.action = BF_MORPH_AT_FIXED_SPOT, .args = {PX, PY}},
+		{.action = BF_MORPH_AT_FIXED_SPOT, .args = {42, 42}},
 		{.action = BF_LOOK_1_AREA, .args = {STONE_FLOOR}},
 		{.action = BF_DIE_AFTER_N, {1}}
 	};
@@ -151,7 +149,7 @@ static void generate_fov(TCOD_map_t fov, bool explored[HEIGHT][WIDTH])
 int main(int argc, char *argv[])
 {
 	int x, y, tile;
-	int px = PX, py = PY;
+	int px = 42, py = 42;
 	struct bf_farm farm;
 
 	farm = (struct bf_farm){
@@ -215,7 +213,7 @@ int main(int argc, char *argv[])
 				farm.seed = time(NULL);
 				printf("seed: %u\n", farm.seed);
 				generate_dungeon(&farm);
-				px = PX, py = PY;
+				px = 42, py = 42;
 				generate_fov(fov_map, explored);
 			} else if (key.c == 's') {
 				for (x = 0; x < WIDTH; ++x) {

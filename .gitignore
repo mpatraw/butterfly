@@ -3,9 +3,10 @@
 *.pyc
 lib/libbutterfly.a
 lib/libbutterfly.so
-examples/ex0
-examples/ex1
-examples/ex2
-examples/ex3
-examples/ex4
-examples/ss
+examples/plain/ex0
+examples/plain/ex1
+examples/plain/ex2
+examples/plain/ex3
+examples/blt/ex4
+examples/tcod/ss
+examples/tcod/ctr

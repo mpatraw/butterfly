@@ -4,6 +4,10 @@
 
 **Butterfly** is designed to be a simple and general implementation of the [Drunkard's Walk](https://en.wikipedia.org/wiki/Random_walk) algorithm for generating 2D maps.
 
+Here is a screenshot of a simple dungeon with caves.
+
+![screenshot](https://github.com/mpatraw/butterfly/raw/master/doc/ss.png "screenshot")
+
 # Building
 
 **Butterfly** uses [tup](http://gittup.org/tup/) for its build system and running `tup upd` should give you everything you need, including the examples.
