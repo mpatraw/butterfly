@@ -195,7 +195,7 @@ static bool check_if_should_die(
 
 	if (ndeaths == 0) {
 		bf->error = BF_ERROR_NO_DEATH;
-		return;
+		return true;
 	}
 
 	for (i = 0; i < ndeaths; ++i) {
