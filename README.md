@@ -20,11 +20,10 @@ Here is a screenshot of a simple dungeon with caves. The full source code (using
 
 The steps are:
 
-* **Morph** (Optional) - This is where the butterfly starts its "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start.
-When not provided, the default is the last death location of the butterfly or 0,0.
-* **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information.
-* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line.
-* **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out.
+* **Morph** (Optional) - This is where the butterfly starts its "walk." For example, a butterfly might choose only safe (walkable) spaces in which to start. When not provided, the default is the last death location of the butterfly or 0,0.
+* **Goal** (Optional) - This just sets an optional goal location for the butterfly to aim towards. Other steps can use this information. When not provided instincts that use the goal will not work.
+* **Flutter** (Optional) - This is the "walk" algorithm. It can be a weighted walk or predefined path like a straight line. When not provided, the butterfly doesn't move.
+* **Look** (Optional) - This is the way the butterfly "digs" out the dungeon. You can choose different shapes and patterns for the butterfly to dig out. When not provided, the butterfly doesn't look anywhere.
 * **Die** (Required) - This is how the butterfly stops its digging. For example, the butterfly might have a 1 in 20 chance to die each time it looks (digs).
 
 Controlling these steps is done with an array of "instincts," which you pass to a function. The ordering of the array doesn't matter, and you can have multiple entries for each step. In some cases all of them will be used (Die), others, each time you call the function it will pick a random entry for each step.

@@ -310,6 +310,9 @@ enum {
 	 * configuration options.
 	 */
 	BF_ERROR_CANCEL,
+	/* This will trigger if a butterfly has no death instinct.
+	 */
+	BF_ERROR_NO_DEATH,
 	BF_ERROR_NO_MEM
 };
 

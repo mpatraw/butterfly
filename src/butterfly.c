@@ -193,6 +193,11 @@ static bool check_if_should_die(
 		instincts, count,
 		BF_DIE_START, BF_DIE_END);
 
+	if (ndeaths == 0) {
+		bf->error = BF_ERROR_NO_DEATH;
+		return;
+	}
+
 	for (i = 0; i < ndeaths; ++i) {
 		/* ensure each check is run */
 		should_die = should_die || die(bf, farm, &deaths[i]);
